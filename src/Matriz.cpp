@@ -1,0 +1,71 @@
+#include "Matriz.h"
+#include <cmath>
+
+using namespace std;
+
+Matriz::Matriz(const Matriz& m) {
+	cantFilas = m.cantFilas;
+	cantColumnas = m.cantColumnas;
+	for (int i=0; i<cantFilas; i++){
+		matriz.push_back(m.matriz[i]);
+	}
+}
+
+Matriz::Matriz(int filas, int columnas){
+	cantFilas = filas;
+	cantColumnas = columnas;
+	vector<double> fila;
+	for(int i = 0; i < columnas; i++){
+		fila.push_back(0.0);
+	}
+
+	for(int i = 0; i < filas; i++){
+		matriz.push_back(fila);
+	}
+}
+
+void Matriz::put(int fila, int columna, double elem){
+	matriz[fila][columna] = elem;
+}
+
+int Matriz::filas() {
+	return cantFilas;
+}
+
+int Matriz::columnas() {
+	return cantColumnas;
+}
+
+double Matriz::elem(int fila, int columna){
+	return matriz[fila][columna];
+}
+
+void Matriz::print() {
+	cout << "Filas: " << cantFilas << " .Columnas: " << cantColumnas << "\n";
+	for (int i=0; i<cantFilas; i++){
+		for (int j=0; j<cantColumnas; j++){
+			cout << matriz[i][j] << " ";
+		}
+		cout << "\n";
+	}
+}
+
+vector<double> Matriz::fila(int fila) {
+	return matriz[fila];
+}
+
+Matriz Matriz::gauss(){
+	Matriz m = Matriz(* this);
+
+	for (int k=0; k<cantFilas; k++){
+		for (int i=k+1; i<cantFilas; i++){
+			int z = m.elem(i,k) / m.elem(k,k);
+			m.put(i,k,0);	
+			for (int j=k+1; j<cantColumnas; j++) {
+				m.put(i, j , m.elem(i,j) - z * m.elem(k,j));
+			}
+		}
+	}
+	return m;
+}
+
