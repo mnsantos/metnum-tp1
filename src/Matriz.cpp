@@ -59,7 +59,7 @@ Matriz Matriz::gauss(){
 
 	for (int k=0; k<cantFilas; k++){
 		for (int i=k+1; i<cantFilas; i++){
-			int z = m.elem(i,k) / m.elem(k,k);
+			double z = m.elem(i,k) / m.elem(k,k);
 			m.put(i,k,0);	
 			for (int j=k+1; j<cantColumnas; j++) {
 				m.put(i, j , m.elem(i,j) - z * m.elem(k,j));
@@ -69,3 +69,50 @@ Matriz Matriz::gauss(){
 	return m;
 }
 
+Matriz::Matriz(int tamanio){
+	cantFilas = tamanio;
+	cantColumnas = tamanio;
+	vector<double> fila;
+	for(int i = 0; i < cantColumnas; i++){
+		fila.push_back(0.0);
+	}
+
+	for(int i = 0; i < cantFilas; i++){
+		matriz.push_back(fila);
+	}
+}
+
+vector<Matriz> Matriz::lu(){
+	Matriz u = Matriz(* this);
+	Matriz l = Matriz(cantFilas, cantColumnas);
+
+	for (int k=0; k<cantColumnas; k++){
+		l.put(k,k,1);
+		for (int i=k+1; i<cantFilas; i++){
+			double z = u.elem(i,k) / u.elem(k,k);
+			u.put(i,k,0);	
+			l.put(i,k,z);
+			for (int j=k+1; j<cantColumnas; j++) {
+				u.put(i, j , u.elem(i,j) - z * u.elem(k,j));
+			}
+		}
+	}
+	vector<Matriz> factorizacionLu;
+	factorizacionLu.push_back(l);
+	factorizacionLu.push_back(u);
+	return factorizacionLu;
+}
+
+Matriz Matriz::producto(Matriz * m){
+	Matriz res = Matriz(cantFilas, m -> columnas());
+	for (int i=0; i<cantFilas; i++){
+		for (int j=0; j<cantColumnas; j++){
+			double v = 0;
+			for (int k=0; k<cantColumnas; k++){
+				v += matriz[i][k] * m -> elem(k,j);
+			}
+			res.put(i,j,v);
+		}
+	}
+	return res;
+}

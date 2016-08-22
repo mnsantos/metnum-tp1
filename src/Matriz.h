@@ -12,15 +12,17 @@ class Matriz {
 	public:
 			Matriz(int filas, int columnas);
 			Matriz(const Matriz& m);
+			Matriz(int tamanio);
 			//Matriz(istream& is);
+			Matriz producto(Matriz * m);
 			double elem(int fila, int columna);
 			int filas();
 			int columnas();
 			void put(int fila, int columna, double elem);
-			int findDistinctZero(int fila, int columna);
 			vector<double> fila(int fila);
 			void print();
 			Matriz gauss();
+			vector<Matriz> lu();
 
 			/*Matriz sumar(Matriz& otraMatriz);
 			Matriz restar(Matriz& otraMatriz);
