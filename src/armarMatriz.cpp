@@ -16,6 +16,13 @@ int m = 360/deltaAngulo
 //Matriz de Temperaturas
 double[][] T = double[j][k];
 
+//coeficientes
+double a = ( (1/radio*radio) - (1/radio*deltaRadio) );
+double b = ( (1/(radio*deltaRadio)) - (2/(deltaRadio*deltaRadio)) - (2/((deltaAngulo*deltaAngulo)*(deltaRadio*deltaRadio))) );
+double c = ( (1/(deltaRadio*deltaRadio)) );
+double d = ( (1/((radio*radio) * (deltaAngulo*deltaAngulo))) );
+double e = ( (1/((radio*radio)*(deltaAngulo*deltaAngulo))) );
+
 //Matriz de coeficientes
 int cantidadIncognitas = n*m;
 double[][] M = double[cantidadIncognitas][cantidadIncognitas];
@@ -62,4 +69,11 @@ for (int i = 0; i < cantidadIncognitas; ++i)
 //asigno a la matriz de coeficientes el coeficiente correspondiente
 		M[i][l] = coeficiente;
 	}
+}
+
+#include <stdio.h>
+int main( int argc, const char* argv[] ){
+	entrada();
+	armado();
+	salida();
 }
