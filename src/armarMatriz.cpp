@@ -8,10 +8,10 @@ int deltaRadio = 1;
 int deltaAngulo = 1;
 
 //cantidad de segmentos de radio
-int n = radio/deltaRadio
+int n = radio/deltaRadio;
 
 //cantidad de segmentos de angulo
-int m = 360/deltaAngulo
+int m = 360/deltaAngulo;
 
 //Matriz de Temperaturas
 double[][] T = double[j][k];
