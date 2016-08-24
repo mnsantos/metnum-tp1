@@ -23,6 +23,7 @@ class Matriz {
 			void print();
 			Matriz gauss();
 			vector<Matriz> lu();
+			vector<double> solucion(const vector<double>);
 
 			/*Matriz sumar(Matriz& otraMatriz);
 			Matriz restar(Matriz& otraMatriz);

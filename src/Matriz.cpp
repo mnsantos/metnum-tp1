@@ -116,3 +116,30 @@ Matriz Matriz::producto(Matriz * m){
 	}
 	return res;
 }
+
+
+vector<double > Matriz::solucion(const vector<double> b){
+	cout<<"\n estoy dentro \n";
+	vector<double > sol;
+	for(int i = 0; i < c; i++){
+		sol.push_back(0.0);
+	}
+	double acum=0.0;
+	int pasoVertical=cantColumnas-1;
+	//caso triangular superior
+	for(int i=pasoVertical; i>=0; i--){
+		if(matriz[i][i]!=0){
+			for(int j=i+1; j<c; j++){
+						acum=acum+matriz[i][j]*sol[j];
+			}
+			double algo1=b[i];
+			double algo2=sol[i];
+			sol[i]=(b[i]-acum)/matriz[i][i];
+			 algo2=sol[i];
+			acum=0.0;
+		}else{
+			sol[i]=0.0;
+		}
+	}
+	return sol;
+}
