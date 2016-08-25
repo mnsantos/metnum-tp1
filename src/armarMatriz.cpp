@@ -1,3 +1,27 @@
+//Entrada
+//(ri , re , m+1, n, vi, Ti , Te(θ))
+10 100 30 30 500 1
+1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 
+
+double[][] M = double[cantidadIncognitas][cantidadIncognitas];
+
+void entrada(){
+	radioInterno << cin;
+	radioExterno << cin;
+	mMasUno << cin;
+	n << cin;
+	valorIsoterma << cin;
+
+	for (int i = 0; i < n/2; ++i)
+	{
+		M[i][n] << cin
+	}
+	for (int i = 0; i < n/2; ++i)
+	{
+		M[n-i][n] << cin
+	}
+}
+
 //Datos
 int radio = 100;
 int T_i = 1500;
@@ -24,50 +48,51 @@ double d = ( (1/((radio*radio) * (deltaAngulo*deltaAngulo))) );
 double e = ( (1/((radio*radio)*(deltaAngulo*deltaAngulo))) );
 
 //Matriz de coeficientes
-int cantidadIncognitas = n*m;
-double[][] M = double[cantidadIncognitas][cantidadIncognitas];
-for (int i = 0; i < cantidadIncognitas; ++i)
-{
-	int actualJ = i%m;
-	int actualK = i%n;
-	for (int l = 0; l < cantidadIncognitas; ++l)
+void armado(){
+	int cantidadIncognitas = n*m;
+	for (int i = 0; i < cantidadIncognitas; ++i)
 	{
-		double coeficiente = 0;
-		int internoJ = l%m;
-		int internoK = l%m;
+		int actualJ = i%m;
+		int actualK = i%n;
+		for (int l = 0; l < cantidadIncognitas; ++l)
+		{
+			double coeficiente = 0;
+			int internoJ = l%m;
+			int internoK = l%m;
 
-		if (internoJ == actualJ -1 )
-		{
-			if (internoK == actualK)
+			if (internoJ == actualJ -1 )
 			{
-				coeficiente = a;
+				if (internoK == actualK)
+				{
+					coeficiente = a;
+				}
 			}
-		}
-		if (internoJ == actualJ)
-		{
-			if (internoK == actualK -1 )
+			if (internoJ == actualJ)
 			{
-				coeficiente = d;
+				if (internoK == actualK -1 )
+				{
+					coeficiente = d;
+				}
+				if (internoK == actualK)
+				{
+					coeficiente = b;
+				}
+				if (internoK == internoK +1 )
+				{
+					coeficiente = e;
+				}
 			}
-			if (internoK == actualK)
+			if (internoJ == actualJ +1 )
 			{
-				coeficiente = b;
+				if (internoK == actualK)
+				{
+					coeficiente = c;
+				}
 			}
-			if (internoK == internoK +1 )
-			{
-				coeficiente = e;
-			}
-		}
-		if (internoJ == actualJ +1 )
-		{
-			if (internoK == actualK)
-			{
-				coeficiente = c;
-			}
-		}
 
-//asigno a la matriz de coeficientes el coeficiente correspondiente
-		M[i][l] = coeficiente;
+	//asigno a la matriz de coeficientes el coeficiente correspondiente
+			M[i][l] = coeficiente;
+		}
 	}
 }
 
