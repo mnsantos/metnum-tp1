@@ -126,6 +126,7 @@ bool Matriz::esTriangularSuperior(){
       }
     }
   }
+  return true;
 }
 
 bool Matriz::esTriangularInferior(){
@@ -136,6 +137,7 @@ bool Matriz::esTriangularInferior(){
       }
     }
   }
+  return true;
 }
 
 
