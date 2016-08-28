@@ -30,3 +30,9 @@
 
 # Python files
 *.pyc
+
+# Deps
+*.deps
+
+# TP
+/src/tp
