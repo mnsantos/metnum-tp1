@@ -16,9 +16,9 @@ class Matriz {
     Matriz(int tamanio);
     //Matriz(istream& is);
     Matriz producto(Matriz * m);
-    double elem(int fila, int columna);
-    int filas();
-    int columnas();
+    double elem(int fila, int columna) const;
+    int filas() const;
+    int columnas() const;
     void put(int fila, int columna, double elem);
     vector<double> fila(int fila);
     void print();
@@ -31,5 +31,7 @@ class Matriz {
     int cantColumnas;
     vector< vector<double> > matriz;
 };
+
+  ostream& operator<<(ostream& os, const Matriz& m);
 
 #endif

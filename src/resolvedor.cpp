@@ -37,7 +37,6 @@ Matriz Resolvedor::resolverTriangular(Matriz * m, Matriz * b){
       acum = 0.0;
       if (m->elem(i,i)!=0){
         for (int j=0; j<i; j++){
-          cout << m->elem(i,j)*sol.elem(j,0) << endl;
           acum=acum+m->elem(i,j)*sol.elem(j,0);
         }
         sol.put(i,0,(b -> elem(i,0)-acum)/m->elem(i,i));

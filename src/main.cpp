@@ -3,6 +3,7 @@
 #include "Resolvedor.h"
 #include <utility>
 #include <algorithm>
+#include  <fstream>
 
 using namespace std;
 
@@ -27,12 +28,28 @@ int main(int argc, char **argv){
   b -> put(2,0,3);
 
   Resolvedor * resolvedor = new Resolvedor(*m1);
-  resolvedor -> resolverUsandoLU(b).print();
-  resolvedor -> resolverUsandoGauss(b).print();
+  cout << resolvedor -> resolverUsandoLU(b) << endl;
+  cout << resolvedor -> resolverUsandoGauss(b) << endl;
 
   delete m1;
   delete b;
   delete resolvedor;
+
+  // double radioInterno;
+  // double radioExterno;
+  // int mMasUno;
+  // int n;
+  // double valorIsoterma;
+
+  // ifstream myReadFile;
+  // myReadFile.open("text.txt");
+  // if (myReadFile.is_open()) {
+  //   while (!myReadFile.eof()) {
+  //     myReadFile >> radioInterno >> radioExterno >> mMasUno >> n >> valorIsoterma;
+
+  //   }
+  // }
+  // cout << radioExterno << endl;
 
   return 0;
 }

@@ -32,26 +32,16 @@ void Matriz::put(int fila, int columna, double elem){
   matriz[fila][columna] = elem;
 }
 
-int Matriz::filas() {
+int Matriz::filas() const {
   return cantFilas;
 }
 
-int Matriz::columnas() {
+int Matriz::columnas() const {
   return cantColumnas;
 }
 
-double Matriz::elem(int fila, int columna){
+double Matriz::elem(int fila, int columna) const{
   return matriz[fila][columna];
-}
-
-void Matriz::print() {
-  cout << "Filas: " << cantFilas << " .Columnas: " << cantColumnas << "\n";
-  for (int i=0; i<cantFilas; i++){
-    for (int j=0; j<cantColumnas; j++){
-      cout << matriz[i][j] << " ";
-    }
-    cout << "\n";
-  }
 }
 
 vector<double> Matriz::fila(int fila) {
@@ -69,6 +59,16 @@ Matriz::Matriz(int tamanio){
   for(int i = 0; i < cantFilas; i++){
     matriz.push_back(fila);
   }
+}
+
+ostream& operator<<(ostream& os, const Matriz& m) {
+  for (int i=0; i<m.filas(); i++){
+    for (int j=0; j<m.columnas(); j++){
+      os << m.elem(i,j) << " ";
+    }
+    os << "\n";
+  }
+  return os;
 }
 
 vector<Matriz> Matriz::lu(){
