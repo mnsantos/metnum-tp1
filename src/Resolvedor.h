@@ -9,15 +9,15 @@ using namespace std;
 
 class Resolvedor {
 
-	public:
-			Resolvedor(Matriz& m);
-			Matriz resolverUsandoGauss(Matriz * b);
-			Matriz resolverUsandoLU(Matriz * b);
-			Matriz resolverTriangular(Matriz * m, Matriz * b);
-	private:
-			Matriz L;
-			Matriz U;
-			Matriz matriz;
+  public:
+    Resolvedor(Matriz& m);
+    Matriz resolverUsandoGauss(Matriz * b);
+    Matriz resolverUsandoLU(Matriz * b);
+    Matriz resolverTriangular(Matriz * m, Matriz * b);
+  private:
+    Matriz L;
+    Matriz U;
+    Matriz matriz;
 };
 
 #endif
