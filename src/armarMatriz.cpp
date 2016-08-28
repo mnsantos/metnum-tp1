@@ -1,102 +1,136 @@
+#include <stdio.h>
+#include <vector>
+#include <iostream>
+using namespace std;
 //Entrada
 //(ri , re , m+1, n, vi, Ti , Te(θ))
-10 100 30 30 500 1
-1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 
+//10 100 30 30 500
+//1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 
 
-double[][] M = double[cantidadIncognitas][cantidadIncognitas];
+//variables
+double radioInterno;
+double radioExterno;
+int mMasUno;
+int n;
+double valorIsoterma;
+double deltaRadio;
+double deltaAngulo;
+int cantidadIncognitas;
+vector< vector<double> > matrizCoeficientes;
 
 void entrada(){
-	radioInterno << cin;
-	radioExterno << cin;
-	mMasUno << cin;
-	n << cin;
-	valorIsoterma << cin;
+	cin >> radioInterno;
+	cin >> radioExterno;
+	cin >> mMasUno;
+	cin >> n;
+	cin >> valorIsoterma;
+	cantidadIncognitas = n*n;
+	matrizCoeficientes.resize( cantidadIncognitas , vector<double>( cantidadIncognitas , 0 ) );
 
-	for (int i = 0; i < n/2; ++i)
+	for (int i = 0; i < n; ++i)
 	{
-		M[i][n] << cin
+		matrizCoeficientes[i][i] = 1;
+		/*cin >> */matrizCoeficientes[i][cantidadIncognitas] = 1500;
 	}
-	for (int i = 0; i < n/2; ++i)
+	
+	for (int i = 0; i < n; ++i)
 	{
-		M[n-i][n] << cin
+		matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas-1-i] = 1;
+		/*cin >> */matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas] = 2;
 	}
+
+	//cantidad de segmentos de radio
+	deltaRadio = (radioExterno-radioInterno)/n;
+
+	//cantidad de segmentos de angulo
+	deltaAngulo = 360/n;
+
 }
 
-//Datos
-int radio = 100;
-int T_i = 1500;
-int T_e = 50;
 
-//Discretizacion
-int deltaRadio = 1;
-int deltaAngulo = 1;
-
-//cantidad de segmentos de radio
-int n = radio/deltaRadio;
-
-//cantidad de segmentos de angulo
-int m = 360/deltaAngulo;
-
-//Matriz de Temperaturas
-double[][] T = double[j][k];
-
-//coeficientes
-double a = ( (1/radio*radio) - (1/radio*deltaRadio) );
-double b = ( (1/(radio*deltaRadio)) - (2/(deltaRadio*deltaRadio)) - (2/((deltaAngulo*deltaAngulo)*(deltaRadio*deltaRadio))) );
-double c = ( (1/(deltaRadio*deltaRadio)) );
-double d = ( (1/((radio*radio) * (deltaAngulo*deltaAngulo))) );
-double e = ( (1/((radio*radio)*(deltaAngulo*deltaAngulo))) );
-
-//Matriz de coeficientes
+//Matriz de coeficientes donde rActual es dato y T_j,k es incógnita.
+//Hay que armarla en base a ángulo, luego radio, por pedido de la cátedra.
 void armado(){
-	int cantidadIncognitas = n*m;
-	for (int i = 0; i < cantidadIncognitas; ++i)
+	//para moverse entre filas, cada una representa a un punto de la discretización
+	for (int k = n; k < cantidadIncognitas-n; ++k)
 	{
-		int actualJ = i%m;
-		int actualK = i%n;
-		for (int l = 0; l < cantidadIncognitas; ++l)
+		int iAnguloActual = k / n;
+		int iRadioActual = k % n;
+			
+		//Para moverse en una fila entre columnas, cada columna representa a una incognita.
+		for (int j = 0; j < cantidadIncognitas; ++j)
 		{
-			double coeficiente = 0;
-			int internoJ = l%m;
-			int internoK = l%m;
+			int jAnguloActual = j / n;
+			int jRadioActual = j % n;
 
-			if (internoJ == actualJ -1 )
+			double coeficiente = 0;
+
+			//calculo el radio actual, ya que va en las ecuaciones
+			double rActual = radioInterno + (iRadioActual*deltaRadio);
+
+			//coeficientes en función de (rActual, T_j,k)
+			double a = ( (1/rActual*rActual) - (1/rActual*deltaRadio) );
+			double b = ( (1/(rActual*deltaRadio)) - (2/(deltaRadio*deltaRadio)) - (2/((deltaAngulo*deltaAngulo)*(deltaRadio*deltaRadio))) );
+			double c = ( (1/(deltaRadio*deltaRadio)) );
+			double d = ( (1/((rActual*rActual) * (deltaAngulo*deltaAngulo))) );
+			double e = ( (1/((rActual*rActual)*(deltaAngulo*deltaAngulo))) );
+
+			if (jRadioActual == iRadioActual -1 )
 			{
-				if (internoK == actualK)
+				if (jAnguloActual == iAnguloActual)
 				{
 					coeficiente = a;
 				}
 			}
-			if (internoJ == actualJ)
+			if (jRadioActual == iRadioActual)
 			{
-				if (internoK == actualK -1 )
+				if (jAnguloActual == iAnguloActual -1 )
 				{
 					coeficiente = d;
 				}
-				if (internoK == actualK)
+				if (jAnguloActual == iAnguloActual)
 				{
 					coeficiente = b;
 				}
-				if (internoK == internoK +1 )
+				if (iRadioActual == iRadioActual +1 )
 				{
 					coeficiente = e;
 				}
 			}
-			if (internoJ == actualJ +1 )
+			if (jRadioActual == iRadioActual +1 )
 			{
-				if (internoK == actualK)
+				if (jAnguloActual == iAnguloActual)
 				{
 					coeficiente = c;
 				}
 			}
 
-	//asigno a la matriz de coeficientes el coeficiente correspondiente
-			M[i][l] = coeficiente;
+			//asigno a la matriz de coeficientes el coeficiente correspondiente
+			if (matrizCoeficientes[k][j] == 0)
+			{
+				matrizCoeficientes[k][j] = coeficiente;
+			}
 		}
 	}
 }
 
-#include <stdio.h>
+void salida(){
+	for (int k = 0; k < cantidadIncognitas; ++k)
+	{
+		int anguloActual = k / n;
+		int radioActual = k % n;
+
+		//cout << " fila: "<< k << " _ " << "anguloActual: " << anguloActual << "radioActual: " << radioActual << endl;
+		//Para moverse en una fila entre columnas, cada columna representa a una incognita.
+		for (int j = 0; j <= cantidadIncognitas; ++j)
+		{
+			//cout << " col: "<< j << " | "; //<< "anguloActual: " << anguloActual << "radioActual: " << radioActual;
+			cout << matrizCoeficientes[k][j] << " | ";
+ 		}
+ 		cout << endl;
+	} 
+}
+
 int main( int argc, const char* argv[] ){
 	entrada();
 	armado();
