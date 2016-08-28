@@ -61,6 +61,26 @@ Matriz::Matriz(int tamanio){
   }
 }
 
+Matriz::Matriz(vector< vector<double> > m){
+  matriz = m;
+  cantFilas = m.size(); 
+  cantColumnas = m.size();
+}
+
+Matriz::Matriz(vector<double> b){
+
+  cantFilas = b.size();
+  cantColumnas = 1;
+  for(int i = 0; i < cantFilas; i++){
+    vector<double> fila;
+    for(int j = 0; j < cantColumnas; j++){
+      fila.push_back(b[i]);
+    }
+    matriz.push_back(fila);
+  }
+
+}
+
 ostream& operator<<(ostream& os, const Matriz& m) {
   for (int i=0; i<m.filas(); i++){
     for (int j=0; j<m.columnas(); j++){

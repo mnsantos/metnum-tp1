@@ -13,6 +13,8 @@ class Matriz {
     Matriz();
     Matriz(int filas, int columnas);
     Matriz(const Matriz& m);
+    Matriz(vector< vector<double> > matriz);
+    Matriz(vector<double> matriz);
     Matriz(int tamanio);
     //Matriz(istream& is);
     Matriz producto(Matriz * m);
