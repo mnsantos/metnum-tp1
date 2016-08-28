@@ -8,8 +8,6 @@
 using namespace std;
 //Entrada
 //(ri , re , m+1, n, vi, Ti , Te(θ))
-//10 100 30 30 500
-//1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 1500 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 
 
 //variables
 double radioInterno;
@@ -48,14 +46,14 @@ void entrada(string path){
     }
 
     for (int i = 0; i < n; ++i)
-      {
-        matrizCoeficientes[i][i] = 1;
-      }
-      
-      for (int i = 0; i < n; ++i)
-      {
-        matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas-1-i] = 1;
-      }
+    {
+      matrizCoeficientes[i][i] = 1;
+    }
+    
+    for (int i = 0; i < n; ++i)
+    {
+      matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas-1-i] = 1;
+    }
   }
 
   //cantidad de segmentos de radio
@@ -201,10 +199,10 @@ void armado(){
       }
 
       //asigno a la matriz de coeficientes el coeficiente correspondiente
-      if (matrizCoeficientes[k][j] == 0)
-      {
+      //if (matrizCoeficientes[k][j] == 0)
+      //{
         matrizCoeficientes[k][j] = coeficiente;
-      }
+      //}
     }
   }
 }
@@ -226,11 +224,39 @@ void salida(){
   } 
 }
 
+Matriz resolver(double rI, double rE, Matriz b)
+{
+  radioInterno = rI;
+  radioExterno = rE;
+  mMasUno = mMU;
+  n = nN;
+  for (int i = 0; i < b.size(); ++i)
+  {
+    b_1[i] = b[i];
+  }
+  for (int i = 0; i < n; ++i)
+  {
+    matrizCoeficientes[i][i] = 1;
+  }
+
+  for (int i = 0; i < n; ++i)
+  {
+    matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas-1-i] = 1;
+  }
+  armado();
+}
+
+Matriz resolver(String path)
+{
+  entrada(string path);
+  armado();
+}
+
  int main( int argc, const char* argv[]){
 
-  entrada(argv[1]);
+  resolver(argv[1]);
 
-  armado();
+  
   //salida();
   Matriz m = Matriz(matrizCoeficientes);
   // cout <<"traspaso de matriz" << endl;
@@ -239,14 +265,14 @@ void salida(){
   ofstream outFile;
   outFile.open (argv[2]);
   for (int i = 0; i < nInst; ++i)
-    {
-      Matriz b = Matriz(b_1[i]);
-      // cout <<"traspaso de b" << endl;
-      // cout << b;
-      // cout <<"fin de b"<< endl;
-      Resolvedor r = Resolvedor(m);
-      
-      outFile << r.resolverUsandoLU(&b);
-    }
+  {
+    Matriz b = Matriz(b_1[i]);
+    // cout <<"traspaso de b" << endl;
+    // cout << b;
+    // cout <<"fin de b"<< endl;
+    Resolvedor r = Resolvedor(m);
+    
+    outFile << r.resolverUsandoLU(&b);
+  }
 
  }
