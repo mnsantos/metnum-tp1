@@ -10,6 +10,7 @@ using namespace std;
 class Matriz {
 
 	public:
+			Matriz();
 			Matriz(int filas, int columnas);
 			Matriz(const Matriz& m);
 			Matriz(int tamanio);
@@ -21,15 +22,9 @@ class Matriz {
 			void put(int fila, int columna, double elem);
 			vector<double> fila(int fila);
 			void print();
-			Matriz gauss();
 			vector<Matriz> lu();
-			Matriz solucion(Matriz * m);
 			bool esTriangularSuperior();
 			bool esTriangularInferior();
-
-			/*Matriz sumar(Matriz& otraMatriz);
-			Matriz restar(Matriz& otraMatriz);
-			Matriz multiplicar(Matriz& otraMatriz);*/
 
 	private:
 			int cantFilas;

@@ -4,6 +4,9 @@
 
 using namespace std;
 
+Matriz::Matriz(){
+}
+
 Matriz::Matriz(const Matriz& m) {
   cantFilas = m.cantFilas;
   cantColumnas = m.cantColumnas;
@@ -53,21 +56,6 @@ void Matriz::print() {
 
 vector<double> Matriz::fila(int fila) {
   return matriz[fila];
-}
-
-Matriz Matriz::gauss(){
-  Matriz m = Matriz(* this);
-
-  for (int k=0; k<cantFilas; k++){
-    for (int i=k+1; i<cantFilas; i++){
-      double z = m.elem(i,k) / m.elem(k,k);
-      m.put(i,k,0); 
-      for (int j=k+1; j<cantColumnas; j++) {
-        m.put(i, j , m.elem(i,j) - z * m.elem(k,j));
-      }
-    }
-  }
-  return m;
 }
 
 Matriz::Matriz(int tamanio){
@@ -138,45 +126,4 @@ bool Matriz::esTriangularInferior(){
     }
   }
   return true;
-}
-
-
-Matriz Matriz::solucion(Matriz * b){
-  Matriz sol = Matriz(b -> filas(), b -> columnas());
-  double acum;
-  int pasoVertical=cantColumnas-1;
-
-  if (esTriangularSuperior()){
-    //caso triangular superior: backward substitution
-    for (int i=pasoVertical; i>=0; i--){
-      acum = 0.0;
-      if (matriz[i][i]!=0){
-        for (int j=i+1; j<cantColumnas; j++){
-          acum=acum+matriz[i][j]*sol.elem(j,0);
-        }
-        sol.put(i,0,(b -> elem(i,0)-acum)/matriz[i][i]);
-      } else {
-        sol.put(i,0,0.0);
-      }
-    }
-    return sol;
-  } else if (esTriangularInferior()){
-    //caso triangular superior: forward substitution
-    for (int i=0; i<cantColumnas; i++){
-      acum = 0.0;
-      if (matriz[i][i]!=0){
-        for (int j=0; j<i; j++){
-          cout << matriz[i][j]*sol.elem(j,0) << endl;
-          acum=acum+matriz[i][j]*sol.elem(j,0);
-        }
-        sol.put(i,0,(b -> elem(i,0)-acum)/matriz[i][i]);
-      } else {
-        sol.put(i,0,0.0);
-      }
-    }
-    return sol;
-  } else {
-    throw std::runtime_error("La matriz no es triangular");
-  }
-  
 }
