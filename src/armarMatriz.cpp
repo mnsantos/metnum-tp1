@@ -95,35 +95,109 @@ void armado(){
       double e = ( ( 1 / ( ( rActual*rActual) * (deltaAngulo*deltaAngulo)) ) );
 
       {
-        if (cRadioActual == fRadioActual -1 )
+        //caso borde con fAngulo = 0 dice que estoy la linea de angulo 0.
+        if (fAnguloActual == 0) 
         {
-          if (cAnguloActual == fAnguloActual)
+          if (cRadioActual == fRadioActual -1)
           {
-            coeficiente = a;
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = a;
+            } 
+          }
+          if (cRadioActual == fRadioActual)
+          {
+            if (cAnguloActual == n-1)
+            {
+              coeficiente = d;
+            }
+            if (cAnguloActual == fAnguloActual)
+            {
+              coeficiente = b;
+            }
+            if (cAnguloActual == fAnguloActual +1)
+            {
+              coeficiente = e;
+            }
+          }
+          if (cRadioActual == fRadioActual +1)
+          {
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = c;
+            }
           }
         }
-        if (cRadioActual == fRadioActual)
+
+
+        if (fAnguloActual == n-1) 
         {
-          if (cAnguloActual == fAnguloActual - 1 || cAnguloActual == n-1 )
+          if (cRadioActual == fRadioActual -1)
           {
-            coeficiente = d;
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = a;
+            } 
           }
-          if (cAnguloActual == fAnguloActual)
+          if (cRadioActual == fRadioActual)
           {
-            coeficiente = b;
+            if (cAnguloActual == fAnguloActual -1)
+            {
+              coeficiente = d;
+            }
+            if (cAnguloActual == fAnguloActual)
+            {
+              coeficiente = b;
+            }
+            if (cAnguloActual == 0)
+            {
+              coeficiente = e;
+            }
           }
-          if (cAnguloActual == fAnguloActual + 1 || cAnguloActual == n )
+          if (cRadioActual == fRadioActual +1)
           {
-            coeficiente = e;
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = c;
+            } 
           }
         }
-        if (cRadioActual == fRadioActual + 1 )
+        
+
+        else
         {
-          if (cAnguloActual == fAnguloActual)
+          if (cRadioActual == fRadioActual -1)
           {
-            coeficiente = c;
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = a;
+            } 
+          }
+          if (cRadioActual == fRadioActual)
+          {
+            if (cAnguloActual == fAnguloActual -1)
+            {
+              coeficiente = d;
+            }
+            if (cAnguloActual == fAnguloActual)
+            {
+              coeficiente = b;
+            }
+            if (cAnguloActual == fAnguloActual +1)
+            {
+              coeficiente = e;
+            }
+          }
+          if (cRadioActual == fRadioActual +1)
+          {
+            if(cAnguloActual == fAnguloActual)
+            {
+              coeficiente = c;
+            } 
           }
         }
+
+
       }
 
       //asigno a la matriz de coeficientes el coeficiente correspondiente
