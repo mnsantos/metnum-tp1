@@ -1,0 +1,90 @@
+\documentclass[a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{latexsym}
+\usepackage[colorlinks=true, linkcolor=black]{hyperref}
+\usepackage{wrapfig}
+\usepackage{algpseudocode}
+\usepackage{calc}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+\usepackage{lscape}
+\definecolor{gray}{gray}{0.5}
+\definecolor{light-gray}{gray}{0.95}
+\definecolor{orange}{rgb}{1,0.5,0}
+
+\input{page.layout}
+\usepackage{underscore}
+\usepackage{caratula}
+\usepackage{url}
+
+\newcommand{\cod}[1]{{\tt #1}}
+\newcommand{\negro}[1]{{\bf #1}}
+\newcommand{\ital}[1]{{\em #1}}
+\newcommand{\may}[1]{{\sc #1}}
+\newcommand{\tab}{\hspace*{2em}}
+
+\newenvironment{taskstable}
+{ \begin{tabular}{| p{14cm} | p{1cm} |}
+ \hline
+ \multicolumn{2}{|c|}{{\bf División en tareas}}\\
+ \hline
+ {\bf Tarea} & {\bf HH}\\
+ \hline }
+{ \end{tabular} }
+
+\newcommand{\task}[2]{#1 & #2\\
+ \hline}
+
+\hypersetup{
+ pdfstartview= {FitH \hypercalcbp{\paperheight-\topmargin-1in-\headheight}},
+ pdfauthor={Grupo},
+ pdfsubject={Dise\~{n}o}
+}
+
+\lstset{escapechar=@}
+
+\begin{document}
+
+\thispagestyle{empty}
+\materia{Métodos Numéricos}
+\submateria{Segundo Cuatrimestre de 2016}
+\titulo{Trabajo Práctico Número 1: Trabajamos y nos divertimos...}
+
+\integrante{Mauro Farías}{}{}
+\integrante{Agustín Gallardo}{}{}
+\integrante{Martín Santos}{413/11}{martin.n.santos@gmail.com}
+
+\makeatletter
+
+\maketitle
+
+\newenvironment{myindentpar}[1]
+{\begin{list}{1}
+         {\setlength{\leftmargin}{#1}}
+         \item[]
+}
+{\end{list}}
+
+\tableofcontents
+
+\newpage
+\input{intro.tex}
+\input{desarrollo.tex}
+\input{resultados.tex}
+\input{conclusiones.tex}
+\input{apendices.tex}
+\input{referencias.tex}
+\newpage
+
+\bibliographystyle{plain}
+\bibliography{tp3}
+
+\end{document}
