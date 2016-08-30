@@ -14,31 +14,23 @@ Parametros FileManager::read() {
   vector<Matriz> bs;
   ifstream myReadFile;
 
-  //variables
-  double radioInterno;
-  double radioExterno;
-  int mMasUno; // cantRadios
-  int n; // cantAngulos
-  double valorIsoterma;
-  int nInst;
-
   Parametros params;
 
   myReadFile.open(pathFileIn.c_str());
   if (myReadFile.is_open()) {
     myReadFile >> params.radioInterno >> params.radioExterno >> params.mMasUno >> params.n >> params.valorIsoterma >> params.nInst;
-    double cantidadIncognitas = n*mMasUno;
+    double cantidadIncognitas = params.n*params.mMasUno;
     double elem;
-    for (int i = 0; i < nInst; ++i) {
-      Matriz b = Matriz(n, 1);
-      for (int j = 0; j < n; ++j) {
+    for (int i = 0; i < params.nInst; ++i) {
+      Matriz b = Matriz(params.n, 1);
+      for (int j = 0; j < params.n; ++j) {
         myReadFile >> elem;
         b.put(j, 1, elem);
       }
-      for (int j = n; j < cantidadIncognitas-n; ++j) {
+      for (int j = params.n; j < cantidadIncognitas-params.n; ++j) {
         b.put(j, 1, 0);
       }
-      for (int j = cantidadIncognitas-n; j < cantidadIncognitas; ++j) {
+      for (int j = cantidadIncognitas-params.n; j < cantidadIncognitas; ++j) {
         myReadFile >> elem;
         b.put(j, 1, elem);
       }
@@ -46,6 +38,9 @@ Parametros FileManager::read() {
     }
   }
   params.bs = bs;
+  params.deltaAngulo = 360/params.n;
+  params.deltaRadio = (params.radioExterno - params.radioInterno) / params.mMasUno;
+
   return params;
 }
 

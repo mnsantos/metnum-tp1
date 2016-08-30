@@ -13,6 +13,8 @@ struct Parametros {
   double valorIsoterma;
   int nInst;
   vector<Matriz> bs;
+  double deltaAngulo;
+  double deltaRadio;
 };
 
 #endif
