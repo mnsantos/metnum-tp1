@@ -278,14 +278,14 @@ Matriz resolver(String path)
 
 
  }
-
+/*
  vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
     vector<int> radiosMinimos;
     vector<int> radiosMaximos;
     for (int i=0; i < cantRadios; i++) {
       for (int j=0; j < cantAngulos; j++) {
         double temp = t(i, j, sol);
-        if (temp > isoterma) {
+        if (temp < isoterma) {
           radiosMinimos.push_back(i-1);
           radiosMaximos.push_back(i);
         }
@@ -295,9 +295,10 @@ Matriz resolver(String path)
     int radioMaximo = * max_element(v.begin(), v.end());
     vector<double> res;
     res.push_back(radioMinimo, radioMaximo);
+    return res;
   }
 
-  void armarNuevosParametros(vector<double> sol, double isoterma) {
+  vector<double> armarNuevosParametros(vector<double> sol, double isoterma) {
     vector<double> radios = hallarRadios(sol, isoterma);
     int radioMinimo = radios[0];
     int radioMaximo = radios[1];
@@ -307,11 +308,21 @@ Matriz resolver(String path)
       temperaturasInternas.push_back(t(radioMinimo, j, sol));
       temperaturasExternas.push_back(t(radioMaximo, j, sol));
     }
-
+    double nuevoRadioInterno = deltaRadio * radioMinimo;
+    double nuevoRadioExterno = deltaRadio * radioMaximo;
+    vector<double> nuevosParametros;
+    nuevosParametros.push_back(nuevoRadioInterno);
+    nuevosParametros.push_back(nuevoRadioExterno);
+    nuevosParametros.push_back(n);
+    nuevosParametros.push_back(mMasUno);
+    for (int i=0; i < temperaturasInternas.size(); i++){
+      nuevosParametros.push_back(temperaturasInternas[i]);
+    }
+    for (int i=0; i < temperaturasExternas.size(); i++){
+      nuevosParametros.push_back(temperaturasExternas[i]);
+    }
+    return nuevosParametros;
   }
 
-  void calcularIsoterma(vector<double> sol, double isoterma) {
-
-  }
-
+*/
   
