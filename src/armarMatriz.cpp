@@ -275,4 +275,43 @@ Matriz resolver(String path)
     outFile << r.resolverUsandoLU(&b);
   }
 
+
+
  }
+
+ vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
+    vector<int> radiosMinimos;
+    vector<int> radiosMaximos;
+    for (int i=0; i < cantRadios; i++) {
+      for (int j=0; j < cantAngulos; j++) {
+        double temp = t(i, j, sol);
+        if (temp > isoterma) {
+          radiosMinimos.push_back(i-1);
+          radiosMaximos.push_back(i);
+        }
+      }
+    }
+    int radioMinimo = * min_element(v.begin(), v.end());
+    int radioMaximo = * max_element(v.begin(), v.end());
+    vector<double> res;
+    res.push_back(radioMinimo, radioMaximo);
+  }
+
+  void armarNuevosParametros(vector<double> sol, double isoterma) {
+    vector<double> radios = hallarRadios(sol, isoterma);
+    int radioMinimo = radios[0];
+    int radioMaximo = radios[1];
+    vector<double> temperaturasInternas;
+    vector<double> temperaturasExternas;
+    for (int i=0; i < cantAngulos; i++) {
+      temperaturasInternas.push_back(t(radioMinimo, j, sol));
+      temperaturasExternas.push_back(t(radioMaximo, j, sol));
+    }
+
+  }
+
+  void calcularIsoterma(vector<double> sol, double isoterma) {
+
+  }
+
+  
