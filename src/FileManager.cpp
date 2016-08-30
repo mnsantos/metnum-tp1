@@ -2,6 +2,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <vector>
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 
@@ -22,30 +24,33 @@ Parametros FileManager::read() {
     double cantidadIncognitas = params.n*params.mMasUno;
     double elem;
     for (int i = 0; i < params.nInst; ++i) {
-      Matriz b = Matriz(params.n, 1);
+      Matriz b = Matriz(cantidadIncognitas, 1);
       for (int j = 0; j < params.n; ++j) {
         myReadFile >> elem;
-        b.put(j, 1, elem);
+        b.put(j, 0, elem);
       }
-      for (int j = params.n; j < cantidadIncognitas-params.n; ++j) {
-        b.put(j, 1, 0);
+      for (int j = params.n; j < cantidadIncognitas-(params.n); ++j) {
+        b.put(j, 0, 0);
       }
-      for (int j = cantidadIncognitas-params.n; j < cantidadIncognitas; ++j) {
+      for (int j = cantidadIncognitas-(params.n); j < cantidadIncognitas; ++j) {
         myReadFile >> elem;
-        b.put(j, 1, elem);
+        b.put(j, 0, elem);
       }
       bs.push_back(b);
     }
   }
   params.bs = bs;
   params.deltaAngulo = 360/params.n;
-  params.deltaRadio = (params.radioExterno - params.radioInterno) / params.mMasUno;
+  params.deltaRadio = (params.radioExterno - params.radioInterno) / (params.mMasUno-1);
 
   return params;
 }
 
-void FileManager::write(Matriz m) {
+void FileManager::write(vector<Matriz> xs) {
   ofstream outFile;
   outFile.open(pathFileOut.c_str());
-  outFile << m;
+  for (int i = 0; i < xs.size(); ++i)
+  {
+    outFile << setprecision(9) << xs[i];
+  }
 }

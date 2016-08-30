@@ -8,6 +8,7 @@
 #include "FileManager.h"
 
 using namespace std;
+
 //Matriz de coeficientes donde rActual es dato y T_j,k es incógnita.
 //Hay que armarla en base a radio, luego angulo.
 Matriz armado(Parametros param)
@@ -19,6 +20,8 @@ Matriz armado(Parametros param)
   double deltaRadio = param.deltaRadio;
   double deltaAngulo = param.deltaAngulo;
   double radioInterno = param.radioInterno;
+
+  matrizCoeficientes.resize( cantidadIncognitas , vector<double>( cantidadIncognitas , 0 ) );
 
   for (int i = 0; i < n; ++i)
   {
@@ -165,10 +168,7 @@ Matriz armado(Parametros param)
 
 void salida(vector<Matriz> xs, FileManager manager)
 {
-  for (int i = 0; i < xs.size(); ++i)
-  {
-    manager.write(xs[i]);
-  } 
+    manager.write(xs);
 }
 
 int main(int argc, char **argv)
@@ -181,8 +181,12 @@ int main(int argc, char **argv)
   FileManager manager = FileManager(argv[1], argv[2]);
   //arma la matriz de coeficientes a resolver.
   Parametros params = manager.read();
-  Matriz m = armado(params);
-  Resolvedor resolvedor = Resolvedor(m);
+  Matriz A = armado(params);
+  Resolvedor resolvedor = Resolvedor(A);
+  //cout << "A: " <<endl;
+  //cout << A;
+  //cout << "B: " <<endl;
+  //cout << params.bs[0];
   //matriz de soluciones (cada solución es una columna)
   vector<Matriz> xs;
 
@@ -195,6 +199,8 @@ int main(int argc, char **argv)
     } else {
       xs.push_back(resolvedor.resolverUsandoLU(&params.bs[i]));
     }
+    //cout << "x: " <<endl;
+    //cout << xs[0];
   }
 
   salida(xs, manager);
