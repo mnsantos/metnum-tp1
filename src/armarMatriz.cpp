@@ -253,9 +253,11 @@ Matriz resolver(String path)
 }
 
  int main( int argc, const char* argv[]){
-
+  clock_t inicio_, final_;
+  // desde cuando quiero medir
+  inicio_=clock();
+  ///////////////////////////////
   resolver(argv[1]);
-
   
   //salida();
   Matriz m = Matriz(matrizCoeficientes);
@@ -271,7 +273,10 @@ Matriz resolver(String path)
     // cout << b;
     // cout <<"fin de b"<< endl;
     Resolvedor r = Resolvedor(m);
-    
+  // hasta cuando quiero medir
+  final_=clock();
+  ///////////////////////////////
+    printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
     outFile << r.resolverUsandoLU(&b);
   }
 
@@ -307,11 +312,23 @@ Matriz resolver(String path)
       temperaturasInternas.push_back(t(radioMinimo, j, sol));
       temperaturasExternas.push_back(t(radioMaximo, j, sol));
     }
-
   }
 
-  void calcularIsoterma(vector<double> sol, double isoterma) {
-
+  vector<double > calcularIsoterma(vector<double> sol, double isoterma) {
+	vector<double > radiosIsoterma;
+	double Tactual=0.0;
+	double Tsiguiente=0.0; 
+	for(int ang=0; ang< cantAngulos; ang++){
+		for(int rad=0; rad< cantRadios-1; rad++){
+			Tactual=t(rad, ang, sol);
+			Tsiguiente=t(rad+1, ang, sol);
+			if(Tactual >= isoterma && Tsiguiente < isoterma){
+				double valor=(rad*actual + (rad-1)*siguiente)/(actual+siguiente);
+				radiosIsoterma.push_back(valor);
+			}
+		}	
+	}
+	return radiosIsoterma;
   }
 
   
