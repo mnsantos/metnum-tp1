@@ -46,11 +46,17 @@ Parametros FileManager::read() {
   return params;
 }
 
-void FileManager::write(vector<Matriz> xs) {
+void FileManager::write(vector<Matriz> xs, vector<Matriz> isotermas) {
   ofstream outFile;
   outFile.open(pathFileOut.c_str());
   for (int i = 0; i < xs.size(); ++i)
   {
     outFile << setprecision(9) << xs[i];
+  }
+  ofstream outFile2;
+  outFile2.open((pathFileOut + "_isoterma").c_str());
+  for (int i = 0; i < isotermas.size(); ++i)
+  {
+    outFile2 << setprecision(9) << isotermas[i];
   }
 }

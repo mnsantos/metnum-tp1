@@ -166,64 +166,54 @@ Matriz armado(Parametros param)
   return Matriz(matrizCoeficientes);
 }
 
-void salida(vector<Matriz> xs, FileManager manager)
+void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager)
 {
-    manager.write(xs);
+    manager.write(xs, isotermas);
 }
 
-int main(int argc, char **argv)
-{
-  clock_t inicio_, final_;
-  // desde cuando quiero medir
-  inicio_=clock();
-
-  //lectura de parámetros y archivos de entrada
-  FileManager manager = FileManager(argv[1], argv[2]);
-  //arma la matriz de coeficientes a resolver.
-  Parametros params = manager.read();
-  Matriz A = armado(params);
-  Resolvedor resolvedor = Resolvedor(A);
-  //cout << "A: " <<endl;
-  //cout << A;
-  //cout << "B: " <<endl;
-  //cout << params.bs[0];
-  //matriz de soluciones (cada solución es una columna)
-  vector<Matriz> xs;
-
-  //resuelve la cantidad de instancias que nos pasen
-  for (int i = 0; i < params.nInst; ++i)
-  {
-    //resuelve usando el método pedido por parámetro y ubica en un vector de soluciones
-    if(argv[3] == "0"){
-      xs.push_back(resolvedor.resolverUsandoGauss(&params.bs[i]));
-    } else {
-      xs.push_back(resolvedor.resolverUsandoLU(&params.bs[i]));
-    }
-    //cout << "x: " <<endl;
-    //cout << xs[0];
-  }
-
-  salida(xs, manager);
-
-  final_=clock();
-  ///////////////////////////////
-  //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
-}
-  
-double temp(int radio, int angulo, vector<double> sol, Parametros param)
+double temp(int radio, int angulo, Matriz sol, Parametros param)
 {
   int i = 0;
-  i =  radio * param.mMasUno;
+  i =  radio * param.mMasUno-1;
   i += angulo;
-  return sol[i];
+  return sol.elem(i,0);
 }
+
+vector<double > calcularIsoterma(Parametros params, Matriz sol) {
+  vector<double > radiosIsoterma;
+  double Tactual = 0.0;
+  double Tsiguiente = 0.0; 
+  double cantRadios = params.mMasUno;
+  double cantAngulos = params.n;
+  for(int ang=0; ang< cantAngulos; ang++){
+    for(int rad=0; rad< cantRadios-1; rad++){
+      Tactual=temp(rad, ang, sol, params);
+      Tsiguiente=temp(rad+1, ang, sol, params);
+      double valor;
+      // habria que chequear si no es ~= en vez de =
+      if(Tactual == params.valorIsoterma) {
+        valor = Tactual;
+        radiosIsoterma.push_back(params.radioInterno + valor * params.deltaRadio);
+        break;
+      }
+      else if(Tsiguiente < params.valorIsoterma){
+        //este calculo esta bien?
+        valor =(rad*Tactual + (rad+1)*Tsiguiente)/(Tactual+Tsiguiente);
+        radiosIsoterma.push_back(params.radioInterno + valor * params.deltaRadio);
+        break;
+      }
+    }
+  }
+  return radiosIsoterma;
+}
+
 /*
-vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
+vector<int, int> hallarRadios(Matriz sol, Parametros params) {
     vector<int> radiosMinimos;
     vector<int> radiosMaximos;
     for (int i=0; i < cantRadios; i++) {
       for (int j=0; j < cantAngulos; j++) {
-        double temp = t(i, j, sol);
+        double temp = t(i, j, sol, params);
         if (temp < isoterma) {
           radiosMinimos.push_back(i-1);
           radiosMaximos.push_back(i);
@@ -237,8 +227,7 @@ vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
     return res;
 }
 
-vector<double> armarNuevosParametros(vector<double> sol, double isoterma) {
-  vector<double> radios = hallarRadios(sol, isoterma);
+vector<double> armarNuevosParametros(vector<double> sol, double isoterma, vector<double> radios) {
   int radioMinimo = radios[0];
   int radioMaximo = radios[1];
   vector<double> temperaturasInternas;
@@ -261,24 +250,55 @@ vector<double> armarNuevosParametros(vector<double> sol, double isoterma) {
     nuevosParametros.push_back(temperaturasExternas[i]);
   }
   return nuevosParametros;
-}
+}*/
 
-*/
-  
-/*
-vector<double > calcularIsoterma(vector<double> sol, double isoterma) {
-  vector<double > radiosIsoterma;
-  double Tactual=0.0;
-  double Tsiguiente=0.0; 
-  for(int ang=0; ang< cantAngulos; ang++){
-    for(int rad=0; rad< cantRadios-1; rad++){
-      Tactual=t(rad, ang, sol);
-      Tsiguiente=t(rad+1, ang, sol);
-      if(Tactual >= isoterma && Tsiguiente < isoterma){
-        double valor=(rad*actual + (rad-1)*siguiente)/(actual+siguiente);
-        radiosIsoterma.push_back(valor);
-      }
-    } 
+int main(int argc, char **argv)
+{
+  clock_t inicio_, final_;
+  // desde cuando quiero medir
+  inicio_=clock();
+
+  //lectura de parámetros y archivos de entrada
+  FileManager manager = FileManager(argv[1], argv[2]);
+  //arma la matriz de coeficientes a resolver.
+  Parametros params = manager.read();
+  Matriz A = armado(params);
+  Resolvedor resolvedor = Resolvedor(A);
+  //cout << "A: " <<endl;
+  //cout << A;
+  //cout << "B: " <<endl;
+  //cout << params.bs[0];
+  //matriz de soluciones (cada solución es una columna)
+  vector<Matriz> xs;
+  vector<Matriz> isotermas;
+
+  //resuelve la cantidad de instancias que nos pasen
+  for (int i = 0; i < params.nInst; ++i)
+  {
+    //resuelve usando el método pedido por parámetro y ubica en un vector de soluciones
+    Matriz sol;
+    if(argv[3] == "0"){
+      sol = resolvedor.resolverUsandoGauss(&params.bs[i]);
+      
+    } else {
+      sol = resolvedor.resolverUsandoLU(&params.bs[i]);
+    }
+    isotermas.push_back(calcularIsoterma(params, sol));
+    xs.push_back(sol);
   }
+
+  salida(xs, isotermas, manager);
+
+  final_=clock();
+  ///////////////////////////////
+  //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
 }
-*/
+  
+
+
+
+
+  
+
+
+

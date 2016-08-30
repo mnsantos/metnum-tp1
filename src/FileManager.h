@@ -14,7 +14,7 @@ class FileManager {
   public:
     FileManager(string pathFileIn, string pathFileOut);
     Parametros read();
-    void write(vector<Matriz> xs);
+    void write(vector<Matriz> xs, vector<Matriz> isotermas);
 
   private:
     string pathFileIn;
