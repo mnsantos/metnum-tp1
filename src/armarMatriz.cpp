@@ -156,12 +156,7 @@ Matriz armado(Parametros param)
 
 
       }
-
-        //asigno a la matriz de coeficientes el coeficiente correspondiente
-        //if (matrizCoeficientes[k][j] == 0)
-        //{
       matrizCoeficientes[k][j] = coeficiente;
-        //}
     }
   }
 
@@ -207,10 +202,16 @@ int main(int argc, char **argv)
   final_=clock();
   ///////////////////////////////
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
-
+}
+  
+double temp(int radio, int angulo, vector<double> sol, Parametros param)
+{
+  int i = 0;
+  i =  radio * param.mMasUno;
+  i += angulo;
+  return sol[i];
 }
 /*
-
 vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
     vector<int> radiosMinimos;
     vector<int> radiosMaximos;
@@ -228,38 +229,38 @@ vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
     vector<double> res;
     res.push_back(radioMinimo, radioMaximo);
     return res;
-  }
+}
 
-  vector<double> armarNuevosParametros(vector<double> sol, double isoterma) {
-    vector<double> radios = hallarRadios(sol, isoterma);
-    int radioMinimo = radios[0];
-    int radioMaximo = radios[1];
-    vector<double> temperaturasInternas;
-    vector<double> temperaturasExternas;
-    for (int i=0; i < cantAngulos; i++) {
-      temperaturasInternas.push_back(t(radioMinimo, j, sol));
-      temperaturasExternas.push_back(t(radioMaximo, j, sol));
-    }
-    double nuevoRadioInterno = deltaRadio * radioMinimo;
-    double nuevoRadioExterno = deltaRadio * radioMaximo;
-    vector<double> nuevosParametros;
-    nuevosParametros.push_back(nuevoRadioInterno);
-    nuevosParametros.push_back(nuevoRadioExterno);
-    nuevosParametros.push_back(n);
-    nuevosParametros.push_back(mMasUno);
-    for (int i=0; i < temperaturasInternas.size(); i++){
-      nuevosParametros.push_back(temperaturasInternas[i]);
-    }
-    for (int i=0; i < temperaturasExternas.size(); i++){
-      nuevosParametros.push_back(temperaturasExternas[i]);
-    }
-    return nuevosParametros;
+vector<double> armarNuevosParametros(vector<double> sol, double isoterma) {
+  vector<double> radios = hallarRadios(sol, isoterma);
+  int radioMinimo = radios[0];
+  int radioMaximo = radios[1];
+  vector<double> temperaturasInternas;
+  vector<double> temperaturasExternas;
+  for (int i=0; i < cantAngulos; i++) {
+    temperaturasInternas.push_back(t(radioMinimo, j, sol));
+    temperaturasExternas.push_back(t(radioMaximo, j, sol));
   }
+  double nuevoRadioInterno = deltaRadio * radioMinimo;
+  double nuevoRadioExterno = deltaRadio * radioMaximo;
+  vector<double> nuevosParametros;
+  nuevosParametros.push_back(nuevoRadioInterno);
+  nuevosParametros.push_back(nuevoRadioExterno);
+  nuevosParametros.push_back(n);
+  nuevosParametros.push_back(mMasUno);
+  for (int i=0; i < temperaturasInternas.size(); i++){
+    nuevosParametros.push_back(temperaturasInternas[i]);
+  }
+  for (int i=0; i < temperaturasExternas.size(); i++){
+    nuevosParametros.push_back(temperaturasExternas[i]);
+  }
+  return nuevosParametros;
+}
 
 */
   
 /*
-  vector<double > calcularIsoterma(vector<double> sol, double isoterma) {
+vector<double > calcularIsoterma(vector<double> sol, double isoterma) {
   vector<double > radiosIsoterma;
   double Tactual=0.0;
   double Tsiguiente=0.0; 
@@ -273,5 +274,5 @@ vector<int, int> hallarRadios(vector<double> sol, double isoterma) {
       }
     } 
   }
+}
 */
-  
