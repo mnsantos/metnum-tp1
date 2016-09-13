@@ -3,168 +3,11 @@
 #include <iostream>
 #include "Matriz.h"
 #include "Resolvedor.h"
-#include <fstream>
 #include "Parametros.h"
 #include "FileManager.h"
+#include <fstream>
 
 using namespace std;
-
-//Matriz de coeficientes donde rActual es dato y T_j,k es incógnita.
-//Hay que armarla en base a radio, luego angulo.
-Matriz armado(Parametros param)
-{
-  vector< vector<double> > matrizCoeficientes;
-  int n = param.n;
-  int mMasUno = param.mMasUno;
-  int cantidadIncognitas = n * mMasUno;
-  double deltaRadio = param.deltaRadio;
-  double deltaAngulo = param.deltaAngulo;
-  double radioInterno = param.radioInterno;
-
-  matrizCoeficientes.resize( cantidadIncognitas , vector<double>( cantidadIncognitas , 0 ) );
-
-  for (int i = 0; i < n; ++i)
-  {
-    matrizCoeficientes[i][i] = 1;
-    matrizCoeficientes[cantidadIncognitas-1-i][cantidadIncognitas-1-i] = 1;
-  }
-
-    //para moverse entre filas, cada una representa a un punto de la discretización
-  for (int k = n; k < cantidadIncognitas-n; ++k)
-  {
-    int fAnguloActual = k % n;
-    int fRadioActual = k / n;
-
-
-      //Para moverse en una fila entre columnas, cada columna representa a una incognita.
-    for (int j = 0; j < cantidadIncognitas; ++j)
-    {
-      int cAnguloActual = j % n;
-      int cRadioActual = j / n;
-
-      double coeficiente = 0;
-
-        //calculo el radio actual, ya que va en las ecuaciones
-      double rActual = radioInterno + (fRadioActual*deltaRadio);
-
-        //coeficientes en función de (rActual, T_j,k)
-      double a = ( ( 1 / ( deltaRadio*deltaRadio) ) - (1/(rActual*deltaRadio) ) );
-      double b = ( ( 1 / ( rActual*deltaRadio) ) - ( 2/( deltaRadio*deltaRadio) ) - ( 2/( (deltaAngulo*deltaAngulo)*(rActual*rActual) ) ) );
-      double c = ( ( 1 / ( deltaRadio*deltaRadio) ) );
-      double d = ( ( 1 / ( ( rActual*rActual) * (deltaAngulo*deltaAngulo) ) ) );
-      double e = ( ( 1 / ( ( rActual*rActual) * (deltaAngulo*deltaAngulo)) ) );
-
-      {
-          //caso borde con fAngulo = 0 dice que estoy la linea de angulo 0.
-        if (fAnguloActual == 0) 
-        {
-          if (cRadioActual == fRadioActual -1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = a;
-            } 
-          }
-          if (cRadioActual == fRadioActual)
-          {
-            if (cAnguloActual == n-1)
-            {
-              coeficiente = d;
-            }
-            if (cAnguloActual == fAnguloActual)
-            {
-              coeficiente = b;
-            }
-            if (cAnguloActual == fAnguloActual +1)
-            {
-              coeficiente = e;
-            }
-          }
-          if (cRadioActual == fRadioActual +1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = c;
-            }
-          }
-        }
-
-
-        if (fAnguloActual == n-1) 
-        {
-          if (cRadioActual == fRadioActual -1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = a;
-            } 
-          }
-          if (cRadioActual == fRadioActual)
-          {
-            if (cAnguloActual == fAnguloActual -1)
-            {
-              coeficiente = d;
-            }
-            if (cAnguloActual == fAnguloActual)
-            {
-              coeficiente = b;
-            }
-            if (cAnguloActual == 0)
-            {
-              coeficiente = e;
-            }
-          }
-          if (cRadioActual == fRadioActual +1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = c;
-            } 
-          }
-        }
-
-
-        else
-        {
-          if (cRadioActual == fRadioActual -1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = a;
-            } 
-          }
-          if (cRadioActual == fRadioActual)
-          {
-            if (cAnguloActual == fAnguloActual -1)
-            {
-              coeficiente = d;
-            }
-            if (cAnguloActual == fAnguloActual)
-            {
-              coeficiente = b;
-            }
-            if (cAnguloActual == fAnguloActual +1)
-            {
-              coeficiente = e;
-            }
-          }
-          if (cRadioActual == fRadioActual +1)
-          {
-            if(cAnguloActual == fAnguloActual)
-            {
-              coeficiente = c;
-            } 
-          }
-        }
-
-
-      }
-      matrizCoeficientes[k][j] = coeficiente;
-    }
-  }
-
-  return Matriz(matrizCoeficientes);
-}
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager)
 {
@@ -179,7 +22,8 @@ double temp(int radio, int angulo, Matriz sol, Parametros param)
   return sol.elem(i,0);
 }
 
-vector<double > calcularIsoterma(Parametros params, Matriz sol) {
+vector<double > calcularIsoterma(Parametros params, Matriz sol) 
+{
   vector<double > radiosIsoterma;
   double Tactual = 0.0;
   double Tsiguiente = 0.0; 
@@ -262,12 +106,9 @@ int main(int argc, char **argv)
   FileManager manager = FileManager(argv[1], argv[2]);
   //arma la matriz de coeficientes a resolver.
   Parametros params = manager.read();
-  Matriz A = armado(params);
+  //Matriz de coeficientes donde rActual es dato y T_j,k es incógnita.
+  Matriz A = Matriz(params);
   Resolvedor resolvedor = Resolvedor(A);
-  //cout << "A: " <<endl;
-  //cout << A;
-  //cout << "B: " <<endl;
-  //cout << params.bs[0];
   //matriz de soluciones (cada solución es una columna)
   vector<Matriz> xs;
   vector<Matriz> isotermas;
@@ -290,15 +131,5 @@ int main(int argc, char **argv)
   salida(xs, isotermas, manager);
 
   final_=clock();
-  ///////////////////////////////
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
-}
-  
-
-
-
-
-  
-
-
-
+  }
