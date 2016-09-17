@@ -16,7 +16,7 @@ class Matriz {
     Matriz(vector< vector<double> > matriz);
     Matriz(vector<double> matriz);
     Matriz(int tamanio);
-    Matriz::Matriz(Parametros param);
+    Matriz(Parametros param);
     //Matriz(istream& is);
     Matriz producto(Matriz * m);
     double elem(int fila, int columna) const;
