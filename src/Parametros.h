@@ -1,8 +1,12 @@
 #ifndef PARAMETROS_H
 #define PARAMETROS_H
 
-#include <vector>
 #include "Matriz.h"
+#include <vector>
+
+using namespace std;
+
+class Matriz;
 
 struct Parametros {
   //variables

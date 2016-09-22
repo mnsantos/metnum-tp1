@@ -7,6 +7,8 @@
 
 using namespace std;
 
+struct Parametros;
+
 class Matriz {
 
   public:

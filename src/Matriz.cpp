@@ -1,5 +1,4 @@
 #include "Matriz.h"
-#include "Parametros.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -161,7 +160,9 @@ Matriz::Matriz(Parametros param)
     }
   }
 
-  return Matriz(matrizCoeficientes);
+  matriz = matrizCoeficientes;
+  cantFilas = matrizCoeficientes.size();
+  cantColumnas = cantFilas;
 }
 
 Matriz::Matriz(const Matriz& m) {

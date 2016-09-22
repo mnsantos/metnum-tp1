@@ -12,7 +12,6 @@ using namespace std;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager) {
   manager.write(xs, isotermas);
-  return void;
 }
 
 double temp(int radio, int angulo, Matriz sol, Parametros param) {
@@ -120,7 +119,7 @@ vector<Matriz> resolver(Parametros params, string metodo) {
   //matriz de soluciones (cada solución es una columna)
   vector<Matriz> xs;
   //arma la matriz de coeficientes a resolver.
-  Matriz A = armado(params);
+  Matriz A = Matriz(params);
   Resolvedor resolvedor = Resolvedor(A);
   //resuelve la cantidad de instancias que nos pasen
   for (int i = 0; i < params.nInst; ++i){
@@ -134,17 +133,18 @@ vector<Matriz> resolver(Parametros params, string metodo) {
     }
     xs.push_back(sol);
   }
-  return
+  return xs;
 }
 
-vector<Matriz> obtenerIsotermas(vector<Matriz> xs, Parametros paramIn){
-  for(i=0; i<xs.size(); i++){
+vector<Matriz> obtenerIsotermas(vector<Matriz> xs, Parametros paramIn, string metodo){
+  vector<Matriz> isotermas;
+  for(int i=0; i<xs.size(); i++){
     Matriz sol = Matriz(xs[i]);
     Parametros params = nuevosParametros(sol, paramIn);
     while (hayQueDiscretizarNuevamente(sol, params)) {
-      vector<Matriz> xss = resolver(params, metodo, params.bs[0]);
-      sol = xss[0];
       params = nuevosParametros(sol, params);
+      vector<Matriz> xss = resolver(params, metodo);
+      sol = xss[0];
     }
     isotermas.push_back(calcularIsoterma(params, sol));
   }
@@ -159,14 +159,14 @@ int main(int argc, char **argv) {
   //Lectura de parámetros y archivos de entrada y salida
   FileManager manager = FileManager(argv[1], argv[2]);
   Parametros params = manager.read();
-  string metodo = argv[3]
+  string metodo = argv[3];
 
   
   //Resolución con la discretización pedida por parámetro
   vector<Matriz> xs = resolver(params, metodo);
 
   //Obtención de isoterma mediante refinamiento de las soluciones y promedios
-  vector<Matriz> isotermas = obtenerIsotermas(xs, params);
+  vector<Matriz> isotermas = obtenerIsotermas(xs, params, metodo);
 
   salida(xs, isotermas, manager);
 
