@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include "Matriz.h"
 #include "Resolvedor.h"
 #include "Parametros.h"
@@ -9,6 +10,9 @@
 #include <algorithm> 
 
 using namespace std;
+
+double CONSTANTE = 0.25;
+bool DISCRETIZAR_NUEVAMENTE = false;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager) {
   manager.write(xs, isotermas);
@@ -31,8 +35,8 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
     for(int rad=0; rad< cantRadios-1; rad++){
       Tactual=temp(rad, ang, sol, params);
       Tsiguiente=temp(rad+1, ang, sol, params);
-      cout<<Tactual<<endl;
-      cout<<Tsiguiente<<endl;
+      //cout<<Tactual<<endl;
+      //cout<<Tsiguiente<<endl;
       double valor;
       // habria que chequear si no es ~= en vez de =
       if(Tactual == params.valorIsoterma) {
@@ -53,24 +57,21 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
 }
 
 vector<double> hallarRadios(Matriz sol, Parametros params) {
-  cout << "hallarRadios" << endl;
+  //cout << "hallarRadios" << endl;
   vector<int> radiosMinimos;
   vector<int> radiosMaximos;
-  for (int i=0; i < params.mMasUno-1; i++) {
-    //cout<<"iteracion i"<<i<<endl;
-    for (int j=0; j < params.n; j++) {
-      double t = temp(i, j, sol, params);
-      //cout<<t<<endl;
-      //cout<<params.valorIsoterma<<endl;
+
+  for (int i=0; i < params.n; i++) {
+    for (int j=0; j < params.mMasUno-1; j++) {
+      double t = temp(j, i, sol, params);
       if (t < params.valorIsoterma) {
-        //cout <<sol.elem(0,0) << endl;
-        //cout<<"entre con valor i " << i << " y j " << j << " y temperatura " << t << endl;
-        radiosMinimos.push_back(i-1);
-        radiosMaximos.push_back(i);
+        radiosMinimos.push_back(j-1);
+        radiosMaximos.push_back(j);
         break;
       }
     }
   }
+
   int radioMinimo = * min_element(radiosMinimos.begin(), radiosMinimos.end());
   int radioMaximo = * max_element(radiosMaximos.begin(), radiosMaximos.end());
   vector<double> res;
@@ -82,21 +83,35 @@ vector<double> hallarRadios(Matriz sol, Parametros params) {
 }
 
 bool hayQueDiscretizarNuevamente(Matriz sol, Parametros params) {
+  //cout<<"entreee0"<<endl;
+  //cout<<sol<<endl;
+  double Tactual = 0.0;
+  double Tsiguiente = 0.0; 
+  double cantRadios = params.mMasUno;
+  double cantAngulos = params.n;
+  for(int ang=0; ang< cantAngulos; ang++){
+    for(int rad=0; rad< cantRadios-1; rad++){
+      Tactual=temp(rad, ang, sol, params);
+      Tsiguiente=temp(rad+1, ang, sol, params);
+      if (Tsiguiente < params.valorIsoterma){
+        if ((Tactual - params.valorIsoterma) > CONSTANTE && (abs(Tsiguiente - params.valorIsoterma) > CONSTANTE)){
+          //cout << (Tactual - params.valorIsoterma) << endl;
+          return true;
+        }
+      }
+    }
+  }
   return false;
-  cout << "hayQueDiscretizarNuevamente" << endl;
-  vector<double> radios = hallarRadios(sol, params);
-  int radioMinimo = radios[0];
-  int radioMaximo = radios[1];
-  double CONSTANTE_A_DEFINIR = 10;
-  return (radioMaximo - radioMinimo > CONSTANTE_A_DEFINIR);
 }
 
 Parametros nuevosParametros(Matriz sol, Parametros params) {
   vector<double> radios = hallarRadios(sol, params);
   int radioMinimo = radios[0];
+  //cout<<"Radio minimo "<<radioMinimo<<endl;
   int radioMaximo = radios[1];
+  //cout<<"Radio maximo "<<radioMaximo<<endl;
   double nuevoRadioInterno = params.radioInterno + params.deltaRadio * radioMinimo;
-  double nuevoRadioExterno = params.radioExterno + params.deltaRadio * radioMaximo;
+  double nuevoRadioExterno = params.radioInterno + params.deltaRadio * radioMaximo;
   
   Parametros nuevosParametros;
   nuevosParametros.radioInterno = nuevoRadioInterno;
@@ -105,6 +120,8 @@ Parametros nuevosParametros(Matriz sol, Parametros params) {
   nuevosParametros.n = params.n;
   nuevosParametros.valorIsoterma = params.valorIsoterma;
   nuevosParametros.nInst = params.nInst;
+  nuevosParametros.deltaAngulo = params.deltaAngulo;
+  nuevosParametros.deltaRadio = (nuevosParametros.radioExterno - nuevosParametros.radioInterno) / (nuevosParametros.mMasUno-1);
 
   double cantidadIncognitas = params.n*params.mMasUno;
 
@@ -116,50 +133,52 @@ Parametros nuevosParametros(Matriz sol, Parametros params) {
   for (int j = params.n; j < cantidadIncognitas-(params.n); ++j) {
     b.put(j, 0, 0);
   }
+  int h = 0;
   for (int j = cantidadIncognitas-(params.n); j < cantidadIncognitas; ++j) {
-    b.put(j, 0, temp(radioMaximo, j, sol, params));
+    b.put(j, 0, temp(radioMaximo, h, sol, params));
+    h++;
   }
-
   vector<Matriz> bs;
   bs.push_back(b);
   nuevosParametros.bs = bs;
   return nuevosParametros;
 }
 
-vector<Matriz> resolver(Parametros params, string metodo) {
+Matriz resolver(Parametros params, int i, string metodo) {
   //matriz de soluciones (cada solución es una columna)
   vector<Matriz> xs;
   //arma la matriz de coeficientes a resolver.
   Matriz A = Matriz(params);
+/*  cout<<params.n<<endl;
+  cout<<params.mMasUno<<endl;
+  cout<<params.valorIsoterma<<endl;
+  cout<<params.nInst<<endl;
+  cout<<params.radioInterno<<endl;
+  cout<<params.radioExterno<<endl;
+  cout<<params.deltaAngulo<<endl;
+  cout<<params.deltaRadio<<endl;*/
+  //cout<<A<<endl;
   Resolvedor resolvedor = Resolvedor(A);
-  //resuelve la cantidad de instancias que nos pasen
-  for (int i = 0; i < params.nInst; ++i){
-    //Solucion al sistema con el b
-    Matriz sol;
-    //matriz de soluciones (cada solución es una columna)
-    if(metodo == "0"){
-      sol = resolvedor.resolverUsandoGauss(&params.bs[i]);
-    } else {
-      sol = resolvedor.resolverUsandoLU(&params.bs[i]);
-    }
-    xs.push_back(sol);
+  
+  Matriz sol;
+  //matriz de soluciones (cada solución es una columna)
+  if(metodo == "0"){
+    sol = resolvedor.resolverUsandoGauss(&params.bs[i]);
+  } else {
+    sol = resolvedor.resolverUsandoLU(&params.bs[i]);
   }
-  return xs;
+  return sol;
 }
 
-vector<Matriz> obtenerIsotermas(vector<Matriz> xs, Parametros params, string metodo){
-  vector<Matriz> isotermas;
-  for(int i=0; i<xs.size(); i++){
-    Matriz sol = Matriz(xs[i]);
-    cout << "llegue" <<endl;
-    while (hayQueDiscretizarNuevamente(sol, params)) {
-      params = nuevosParametros(sol, params);
-      vector<Matriz> xss = resolver(params, metodo);
-      sol = xss[0];
+Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo){
+  Parametros copyParms = params;
+  if (DISCRETIZAR_NUEVAMENTE) {
+    while (hayQueDiscretizarNuevamente(sol, copyParms)) {
+      copyParms = nuevosParametros(sol, copyParms);
+      sol = resolver(copyParms, i, metodo);
     }
-    isotermas.push_back(calcularIsoterma(params, sol));
   }
-  return isotermas;
+  return calcularIsoterma(params, sol);
 }
 
 int main(int argc, char **argv) {
@@ -175,7 +194,14 @@ int main(int argc, char **argv) {
 
   
   //Resolución con la discretización pedida por parámetro
-  vector<Matriz> xs = resolver(params, metodo);
+  vector<Matriz> soluciones;
+  vector<Matriz> isotermas;
+  for (int i=0; i<params.nInst; i++){
+    Matriz sol = resolver(params, i, metodo);
+    soluciones.push_back(sol);
+    isotermas.push_back(obtenerIsoterma(sol, params, i, metodo));
+  }
+  
   //for (int i=0; i<params.mMasUno ; i++){
   //  cout << xs[0].elem(0,i) << endl;
   //}
@@ -185,9 +211,9 @@ int main(int argc, char **argv) {
   //  cout << xs[0].elem(i,0) << endl;
   //}
   //Obtención de isoterma mediante refinamiento de las soluciones y promedios
-  vector<Matriz> isotermas = obtenerIsotermas(xs, params, metodo);
+  //vector<Matriz> isotermas = obtenerIsotermas(xs, params, metodo);
 
-  salida(xs, isotermas, manager);
+  salida(soluciones, isotermas, manager);
 
   final_=clock();
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
