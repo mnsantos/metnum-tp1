@@ -12,7 +12,7 @@
 using namespace std;
 
 double CONSTANTE = 0.25;
-bool DISCRETIZAR_NUEVAMENTE = false;
+bool DISCRETIZAR_NUEVAMENTE = true;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager) {
   manager.write(xs, isotermas);
@@ -47,7 +47,7 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
       else if(Tsiguiente < params.valorIsoterma){
         //este calculo esta bien?
         //cout<<"entre"<<endl;
-        valor =(rad*Tactual + (rad+1)*Tsiguiente)/(Tactual+Tsiguiente);
+        valor =(rad/(Tactual-params.valorIsoterma) + (rad+1)/(params.valorIsoterma-Tsiguiente))/(1/(Tactual-params.valorIsoterma)+1/(params.valorIsoterma-Tsiguiente));
         radiosIsoterma.put(ang, 0, params.radioInterno + valor * params.deltaRadio);
         break;
       }
@@ -173,9 +173,12 @@ Matriz resolver(Parametros params, int i, string metodo) {
 Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo){
   Parametros copyParms = params;
   if (DISCRETIZAR_NUEVAMENTE) {
+    int j = 1;
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
+      cout << j <<endl;
       copyParms = nuevosParametros(sol, copyParms);
       sol = resolver(copyParms, i, metodo);
+      j++;
     }
   }
   return calcularIsoterma(params, sol);
