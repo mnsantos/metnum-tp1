@@ -12,7 +12,7 @@
 using namespace std;
 
 double CONSTANTE = 0.25;
-bool DISCRETIZAR_NUEVAMENTE = true;
+bool DISCRETIZAR_NUEVAMENTE = false;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager) {
   manager.write(xs, isotermas);
@@ -30,14 +30,16 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
   double Tsiguiente = 0.0; 
   double cantRadios = params.mMasUno;
   double cantAngulos = params.n;
-  Matriz radiosIsoterma(cantRadios, 1);
+  Matriz radiosIsoterma(cantAngulos, 1);
   for(int ang=0; ang< cantAngulos; ang++){
     for(int rad=0; rad< cantRadios-1; rad++){
+      //cout<< "ang: " << ang<<endl;
+      //cout<< "rad: " << rad<<endl;
       Tactual=temp(rad, ang, sol, params);
       Tsiguiente=temp(rad+1, ang, sol, params);
-      //cout<<Tactual<<endl;
-      //cout<<Tsiguiente<<endl;
+      //cout << "obtuvo T" << endl;
       double valor;
+      //cout << "isoterma: " << params.valorIsoterma << endl;
       // habria que chequear si no es ~= en vez de =
       if(Tactual == params.valorIsoterma) {
         valor = Tactual;
