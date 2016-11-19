@@ -31,14 +31,16 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
   double Tsiguiente = 0.0; 
   double cantRadios = params.mMasUno;
   double cantAngulos = params.n;
-  Matriz radiosIsoterma(cantRadios, 1);
+  Matriz radiosIsoterma(cantAngulos, 1);
   for(int ang=0; ang< cantAngulos; ang++){
     for(int rad=0; rad< cantRadios-1; rad++){
+      //cout<< "ang: " << ang<<endl;
+      //cout<< "rad: " << rad<<endl;
       Tactual=temp(rad, ang, sol, params);
       Tsiguiente=temp(rad+1, ang, sol, params);
-      //cout<<Tactual<<endl;
-      //cout<<Tsiguiente<<endl;
+      //cout << "obtuvo T" << endl;
       double valor;
+      //cout << "isoterma: " << params.valorIsoterma << endl;
       // habria que chequear si no es ~= en vez de =
       if(Tactual == params.valorIsoterma) {
         valor = Tactual;
@@ -211,5 +213,8 @@ int main(int argc, char **argv) {
 
   salida(soluciones, isotermas, metodo, peligrosidades, params, SUBDISCRETIZACIONES, tiemposPorInstancia, total, manager);
 
+  //tiempo ejecución
+  //¡params entrada! usados
+  //peligrosidad
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
 }
