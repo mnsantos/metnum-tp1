@@ -193,5 +193,8 @@ int main(int argc, char **argv) {
   salida(soluciones, isotermas, manager);
 
   final_=clock();
+  //tiempo ejecución
+  //¡params entrada! usados
+  //peligrosidad
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
 }
