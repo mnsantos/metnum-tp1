@@ -159,7 +159,7 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Reso
     SUBDISCRETIZACIONES.push_back(0);
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
       SUBDISCRETIZACIONES[i] ++;
-      cout << j <<endl;
+      //cout << j <<endl;
       copyParms = nuevosParametros(sol, copyParms);
       sol = resolver(copyParms, i, metodo, r);
       j++;
