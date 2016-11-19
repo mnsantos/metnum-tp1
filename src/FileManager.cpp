@@ -3,7 +3,8 @@
 #include <stdexcept>
 #include <vector>
 #include <iomanip>
-#include <iostream>
+#include <iostream> 
+#include <sstream>
 
 using namespace std;
 
@@ -49,14 +50,39 @@ Parametros FileManager::read() {
 void FileManager::write(vector<Matriz> xs, vector<Matriz> isotermas) {
   ofstream outFile;
   outFile.open(pathFileOut.c_str());
-  for (int i = 0; i < xs.size(); ++i)
-  {
+  for (int i = 0; i < xs.size(); ++i) {
     outFile << setprecision(9) << xs[i];
   }
   ofstream outFile2;
   outFile2.open((pathFileOut + "_isoterma").c_str());
-  for (int i = 0; i < isotermas.size(); ++i)
-  {
+  for (int i = 0; i < isotermas.size(); ++i) {
     outFile2 << setprecision(9) << isotermas[i];
   }
+}
+
+void FileManager::write(vector<Matriz> xs, vector<Matriz> isotermas, string metodo, vector<double> peligrosidades, vector<int> subdiscretizaciones, vector<double> tiemposPorInstancia, double tiempoTotal, Parametros params) {
+  this -> write(xs, isotermas);
+  ofstream outExperimentos;
+  ostringstream paramsUsados;
+  paramsUsados << params.radioInterno << "_" << params.radioExterno << "_" << params.mMasUno << "_" << params.n << "_" << params.valorIsoterma << "_" << params.nInst;
+  outExperimentos.open(("experimentos/" + paramsUsados.str() + ".out").c_str());
+  outExperimentos << paramsUsados.str() << endl;\
+  if (metodo=="0") {
+    outExperimentos << "EG" << endl;
+  } else {
+    outExperimentos << "LU" << endl;
+  }
+  for (int i=0; i < peligrosidades.size(); i++){
+    outExperimentos << peligrosidades[i] << " ";
+  }
+  outExperimentos << endl;
+  for (int i=0; i < subdiscretizaciones.size(); i++){
+    outExperimentos << subdiscretizaciones[i] << " ";
+  }
+  outExperimentos << endl;
+  for (int i=0; i < tiemposPorInstancia.size(); i++){
+    outExperimentos << tiemposPorInstancia[i] << " ";
+  }
+  outExperimentos << endl;
+  outExperimentos << tiempoTotal << endl;
 }

@@ -13,9 +13,10 @@ using namespace std;
 
 double CONSTANTE = 0.25;
 bool DISCRETIZAR_NUEVAMENTE = true;
+vector<int> SUBDISCRETIZACIONES;
 
-void salida(vector<Matriz> xs, vector<Matriz> isotermas, FileManager manager) {
-  manager.write(xs, isotermas);
+void salida(vector<Matriz> xs, vector<Matriz> isotermas, string metodo, vector<double> peligrosidades, Parametros params, vector<int> subdiscretizaciones, vector<double> tiemposPorInstancia, double tiempoTotal, FileManager manager) {
+  manager.write(xs, isotermas, metodo, peligrosidades, subdiscretizaciones, tiemposPorInstancia, tiempoTotal, params);
 }
 
 double temp(int radio, int angulo, Matriz sol, Parametros param) {
@@ -52,6 +53,16 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
     }
   }
   return radiosIsoterma;
+}
+
+double medirPeligrosidad(Matriz radiosIsoterma, Parametros params) {
+  double radioMaximo = params.radioInterno;
+  for (int i=0; i<radiosIsoterma.filas(); i++){
+    if (radiosIsoterma.elem(i,0) > radioMaximo){
+      radioMaximo = radiosIsoterma.elem(i,0);
+    }
+  }
+  return (radioMaximo - params.radioInterno) / (params.radioExterno - params.radioInterno);
 }
 
 vector<double> hallarRadios(Matriz sol, Parametros params) {
@@ -143,7 +154,9 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Reso
   Parametros copyParms = params;
   if (DISCRETIZAR_NUEVAMENTE) {
     int j = 1;
+    SUBDISCRETIZACIONES.push_back(0);
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
+      SUBDISCRETIZACIONES[i] ++;
       cout << j <<endl;
       copyParms = nuevosParametros(sol, copyParms);
       sol = resolver(copyParms, i, metodo, r);
@@ -154,29 +167,37 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Reso
 }
 
 int main(int argc, char **argv) {
-  //Comienzo de mediciones para informe
-  clock_t inicio_, final_;
-  // desde cuando quiero medir
-  inicio_=clock();
 
   //Lectura de parámetros y archivos de entrada y salida
   FileManager manager = FileManager(argv[1], argv[2]);
   Parametros params = manager.read();
   string metodo = argv[3];
 
-  
+  //Comienzo de mediciones para informe
+  clock_t inicio, final, inicioAux, finAux;
+  vector<double> tiemposPorInstancia;
+  inicio = clock();
   //Resolución con la discretización pedida por parámetro
   vector<Matriz> soluciones;
   vector<Matriz> isotermas;
+  vector<double> peligrosidades;
+  //arma la matriz de coeficientes a resolver.
+  Matriz m = Matriz(params);
+  Resolvedor resolvedor = Resolvedor(m);
   for (int i=0; i<params.nInst; i++){
-    //arma la matriz de coeficientes a resolver.
-    Matriz m = Matriz(params);
-    Resolvedor resolvedor = Resolvedor(m);
+    inicioAux = clock();
     Matriz sol = resolver(params, i, metodo, resolvedor);
     soluciones.push_back(sol);
-    isotermas.push_back(obtenerIsoterma(sol, params, i, metodo, resolvedor));
+    Matriz isot = obtenerIsoterma(sol, params, i, metodo, resolvedor);
+    finAux = clock();
+    isotermas.push_back(isot);
+    peligrosidades.push_back(medirPeligrosidad(isot, params));
+    tiemposPorInstancia.push_back(double(finAux - inicioAux) / CLOCKS_PER_SEC);
   }
-  
+  final = clock();
+
+  double total = double(final - inicio) / CLOCKS_PER_SEC;
+
   //for (int i=0; i<params.mMasUno ; i++){
   //  cout << xs[0].elem(0,i) << endl;
   //}
@@ -188,8 +209,7 @@ int main(int argc, char **argv) {
   //Obtención de isoterma mediante refinamiento de las soluciones y promedios
   //vector<Matriz> isotermas = obtenerIsotermas(xs, params, metodo);
 
-  salida(soluciones, isotermas, manager);
+  salida(soluciones, isotermas, metodo, peligrosidades, params, SUBDISCRETIZACIONES, tiemposPorInstancia, total, manager);
 
-  final_=clock();
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
 }
