@@ -45,8 +45,6 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
         break;
       }
       else if(Tsiguiente < params.valorIsoterma){
-        //este calculo esta bien?
-        //cout<<"entre"<<endl;
         valor =(rad/(Tactual-params.valorIsoterma) + (rad+1)/(params.valorIsoterma-Tsiguiente))/(1/(Tactual-params.valorIsoterma)+1/(params.valorIsoterma-Tsiguiente));
         radiosIsoterma.put(ang, 0, params.radioInterno + valor * params.deltaRadio);
         break;
@@ -77,28 +75,14 @@ vector<double> hallarRadios(Matriz sol, Parametros params) {
   vector<double> res;
   res.push_back(radioMinimo);
   res.push_back(radioMaximo);
-  //cout << res << endl;
-  //cout<<"termine radios"<<endl;
   return res;
 }
 
 bool hayQueDiscretizarNuevamente(Matriz sol, Parametros params) {
-  //cout<<"entreee0"<<endl;
-  //cout<<sol<<endl;
-  double Tactual = 0.0;
-  double Tsiguiente = 0.0; 
-  double cantRadios = params.mMasUno;
-  double cantAngulos = params.n;
-  for(int ang=0; ang< cantAngulos; ang++){
-    for(int rad=0; rad< cantRadios-1; rad++){
-      Tactual=temp(rad, ang, sol, params);
-      Tsiguiente=temp(rad+1, ang, sol, params);
-      if (Tsiguiente < params.valorIsoterma){
-        if ((Tactual - params.valorIsoterma) > CONSTANTE && (abs(Tsiguiente - params.valorIsoterma) > CONSTANTE)){
-          //cout << (Tactual - params.valorIsoterma) << endl;
-          return true;
-        }
-      }
+  vector<double> radios = hallarRadios(sol, params);
+  for (int j=0; j<params.n; j++){
+    if ( (abs(temp(radios[0],j,sol,params)-params.valorIsoterma) > CONSTANTE) || (abs(temp(radios[0],j,sol,params)-params.valorIsoterma) > CONSTANTE) ) {
+      return true;
     }
   }
   return false;
@@ -144,22 +128,7 @@ Parametros nuevosParametros(Matriz sol, Parametros params) {
   return nuevosParametros;
 }
 
-Matriz resolver(Parametros params, int i, string metodo) {
-  //matriz de soluciones (cada solución es una columna)
-  vector<Matriz> xs;
-  //arma la matriz de coeficientes a resolver.
-  Matriz A = Matriz(params);
-/*  cout<<params.n<<endl;
-  cout<<params.mMasUno<<endl;
-  cout<<params.valorIsoterma<<endl;
-  cout<<params.nInst<<endl;
-  cout<<params.radioInterno<<endl;
-  cout<<params.radioExterno<<endl;
-  cout<<params.deltaAngulo<<endl;
-  cout<<params.deltaRadio<<endl;*/
-  //cout<<A<<endl;
-  Resolvedor resolvedor = Resolvedor(A);
-  
+Matriz resolver(Parametros params, int i, string metodo, Resolvedor resolvedor) {
   Matriz sol;
   //matriz de soluciones (cada solución es una columna)
   if(metodo == "0"){
@@ -170,14 +139,14 @@ Matriz resolver(Parametros params, int i, string metodo) {
   return sol;
 }
 
-Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo){
+Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Resolvedor r){
   Parametros copyParms = params;
   if (DISCRETIZAR_NUEVAMENTE) {
     int j = 1;
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
       cout << j <<endl;
       copyParms = nuevosParametros(sol, copyParms);
-      sol = resolver(copyParms, i, metodo);
+      sol = resolver(copyParms, i, metodo, r);
       j++;
     }
   }
@@ -200,9 +169,12 @@ int main(int argc, char **argv) {
   vector<Matriz> soluciones;
   vector<Matriz> isotermas;
   for (int i=0; i<params.nInst; i++){
-    Matriz sol = resolver(params, i, metodo);
+    //arma la matriz de coeficientes a resolver.
+    Matriz m = Matriz(params);
+    Resolvedor resolvedor = Resolvedor(m);
+    Matriz sol = resolver(params, i, metodo, resolvedor);
     soluciones.push_back(sol);
-    isotermas.push_back(obtenerIsoterma(sol, params, i, metodo));
+    isotermas.push_back(obtenerIsoterma(sol, params, i, metodo, resolvedor));
   }
   
   //for (int i=0; i<params.mMasUno ; i++){

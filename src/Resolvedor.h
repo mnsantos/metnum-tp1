@@ -10,6 +10,7 @@ using namespace std;
 class Resolvedor {
 
   public:
+  	Resolvedor();
     Resolvedor(Matriz& m);
     Matriz resolverUsandoGauss(Matriz * b);
     Matriz resolverUsandoLU(Matriz * b);

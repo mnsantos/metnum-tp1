@@ -5,6 +5,9 @@
 
 using namespace std;
 
+Resolvedor::Resolvedor(){
+}
+
 Resolvedor::Resolvedor(Matriz& m){
   vector<Matriz> lu = m.lu();
   matriz = m;
