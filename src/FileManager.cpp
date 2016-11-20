@@ -65,8 +65,9 @@ void FileManager::write(vector<Matriz> xs, vector<Matriz> isotermas, string meto
   ofstream outExperimentos;
   ostringstream paramsUsados;
   paramsUsados << params.radioInterno << "_" << params.radioExterno << "_" << params.mMasUno << "_" << params.n << "_" << params.valorIsoterma << "_" << params.nInst;
-  outExperimentos.open(("experimentos/" + paramsUsados.str() + ".out").c_str());
-  outExperimentos << paramsUsados.str() << endl;\
+  string expOut = pathFileOut.substr(pathFileOut.find('/')+1, pathFileOut.size());
+  outExperimentos.open(("experimentos/"+expOut).c_str());
+  outExperimentos << paramsUsados.str() << endl;
   if (metodo=="0") {
     outExperimentos << "EG" << endl;
   } else {
