@@ -11,8 +11,8 @@
 
 using namespace std;
 
-double CONSTANTE = 0.25;
-bool DISCRETIZAR_NUEVAMENTE = true;
+double CONSTANTE = 10;
+bool DISCRETIZAR_NUEVAMENTE = true; 
 vector<int> SUBDISCRETIZACIONES;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, string metodo, vector<double> peligrosidades, Parametros params, vector<int> subdiscretizaciones, vector<double> tiemposPorInstancia, double tiempoTotal, FileManager manager) {
@@ -32,15 +32,16 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
   double cantRadios = params.mMasUno;
   double cantAngulos = params.n;
   Matriz radiosIsoterma(cantAngulos, 1);
+  cout << "pre for" << endl;
   for(int ang=0; ang< cantAngulos; ang++){
     for(int rad=0; rad< cantRadios-1; rad++){
-      //cout<< "ang: " << ang<<endl;
-      //cout<< "rad: " << rad<<endl;
+      cout<< "ang: " << ang<<endl;
+      cout<< "rad: " << rad<<endl;
       Tactual=temp(rad, ang, sol, params);
       Tsiguiente=temp(rad+1, ang, sol, params);
-      //cout << "obtuvo T" << endl;
+      cout << "obtuvo T" << endl;
       double valor;
-      //cout << "isoterma: " << params.valorIsoterma << endl;
+      cout << "isoterma: " << params.valorIsoterma << endl;
       // habria que chequear si no es ~= en vez de =
       if(Tactual == params.valorIsoterma) {
         valor = Tactual;
@@ -68,36 +69,57 @@ double medirPeligrosidad(Matriz radiosIsoterma, Parametros params) {
 }
 
 vector<double> hallarRadios(Matriz sol, Parametros params) {
+  cout << sol << endl;
   //cout << "hallarRadios" << endl;
   vector<int> radiosMinimos;
   vector<int> radiosMaximos;
 
   for (int i=0; i < params.n; i++) {
     for (int j=0; j < params.mMasUno-1; j++) {
+      //cout << "pre temp" <<endl;
       double t = temp(j, i, sol, params);
+      cout << "t: " << t << endl;
+      //cout << "post temp" <<endl;
       if (t < params.valorIsoterma) {
-        radiosMinimos.push_back(j-1);
+        if(!(j == 0)){
+          radiosMinimos.push_back(j-1);
+        } else{
+          radiosMinimos.push_back(0);
+        }
         radiosMaximos.push_back(j);
         break;
       }
     }
   }
-
+  cout << radiosMinimos[0] << endl;
+  cout << "sali del for de hallarRadios" <<endl;
   int radioMinimo = * min_element(radiosMinimos.begin(), radiosMinimos.end());
+  cout << "radioMinimo: " << radioMinimo << endl;
   int radioMaximo = * max_element(radiosMaximos.begin(), radiosMaximos.end());
+  cout << "radioMaximo: " << radioMaximo << endl;
   vector<double> res;
+  cout << "marca 3" << endl;
   res.push_back(radioMinimo);
+  cout << "marca 4" << endl;
   res.push_back(radioMaximo);
+  cout << "marca 5" << endl;
   return res;
 }
 
 bool hayQueDiscretizarNuevamente(Matriz sol, Parametros params) {
+  cout << "voy a hallarRadios" << endl;
   vector<double> radios = hallarRadios(sol, params);
+  if ((radios[1] - radios[0] == 1))
+    return false;
+  cout << "pre for hay que DISCRETIZAR_NUEVAMENTE" << endl;
   for (int j=0; j<params.n; j++){
+    cout << "in for: " << j <<endl;
     if ( (abs(temp(radios[0],j,sol,params)-params.valorIsoterma) > CONSTANTE) || (abs(temp(radios[0],j,sol,params)-params.valorIsoterma) > CONSTANTE) ) {
+      cout << "entro al if" << endl;
       return true;
     }
   }
+  cout << "post for hay que DISCRETIZAR_NUEVAMENTE" << endl;
   return false;
 }
 
@@ -158,13 +180,18 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Reso
     int j = 1;
     SUBDISCRETIZACIONES.push_back(0);
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
+      cout << "inicio while" << endl;
       SUBDISCRETIZACIONES[i] ++;
-      //cout << j <<endl;
+      cout << j <<endl;
       copyParms = nuevosParametros(sol, copyParms);
+      cout << "pre sol" << endl;
       sol = resolver(copyParms, i, metodo, r);
+      cout << "post sol" << endl;
       j++;
+      cout << "fin while" << endl;
     }
   }
+  cout << "voy a calcular isoterma" << endl;
   return calcularIsoterma(params, sol);
 }
 
@@ -189,12 +216,16 @@ int main(int argc, char **argv) {
   for (int i=0; i<params.nInst; i++){
     inicioAux = clock();
     Matriz sol = resolver(params, i, metodo, resolvedor);
+    cout << "1" << endl;
     soluciones.push_back(sol);
     Matriz isot = obtenerIsoterma(sol, params, i, metodo, resolvedor);
+    cout << "2" << endl;
     finAux = clock();
     isotermas.push_back(isot);
     peligrosidades.push_back(medirPeligrosidad(isot, params));
+    cout << "3" << endl;
     tiemposPorInstancia.push_back(double(finAux - inicioAux) / CLOCKS_PER_SEC);
+    cout << "4" << endl;
   }
   final = clock();
 

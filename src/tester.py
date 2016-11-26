@@ -23,7 +23,7 @@ def readResults(filename):
 		print tiempoTotal
 	return metodo, listaSubDiscretizaciones, (tamanio, tiempoTotal)
 
-def printTiempos(tiemposLU, tiemposGauss):
+def printTiempos(tiemposLU, tiemposGauss, filename):
 	X = [ x for (x,y) in tiemposLU ]
 	Y = [ y for (x,y) in tiemposLU ]
 	plt.plot(X, Y, label='Factorizacion LU')
@@ -35,7 +35,8 @@ def printTiempos(tiemposLU, tiemposGauss):
 	plt.ylabel('Tiempo en segundos')
 	plt.grid(True)
 	plt.legend(loc='upper center', shadow=True)
-	plt.savefig("test.png")
+	plt.savefig("experimentos/"+filename+".png")
+	plt.close()
 	#plt.show()
 
 def obtenerTiemposCirculo():
@@ -49,7 +50,7 @@ def obtenerTiemposCirculo():
 				tiempoTotalLU.append(((tamanio, tiempoTotal)))
 			else:
 				tiempoTotalGauss.append(((tamanio, tiempoTotal)))
-	printTiempos(tiempoTotalLU, tiempoTotalGauss)
+	printTiempos(tiempoTotalLU, tiempoTotalGauss, "circulo")
 			
 def obtenerTiemposEstrella():
 	tiempoTotalLU = []
@@ -62,7 +63,7 @@ def obtenerTiemposEstrella():
 				tiempoTotalLU.append(((tamanio, tiempoTotal)))
 			else:
 				tiempoTotalGauss.append(((tamanio, tiempoTotal)))
-	printTiempos(tiempoTotalLU, tiempoTotalGauss)
+	printTiempos(tiempoTotalLU, tiempoTotalGauss, "estrella")
 
 def obtenerTiemposParedes():
 	tiempoTotalLU = []
@@ -75,7 +76,7 @@ def obtenerTiemposParedes():
 				tiempoTotalLU.append(((tamanio, tiempoTotal)))
 			else:
 				tiempoTotalGauss.append(((tamanio, tiempoTotal)))
-	printTiempos(tiempoTotalLU, tiempoTotalGauss)
+	printTiempos(tiempoTotalLU, tiempoTotalGauss, "paredes")
 
 def obtenerTiemposOvalo():
 	tiempoTotalLU = []
@@ -88,7 +89,7 @@ def obtenerTiemposOvalo():
 				tiempoTotalLU.append(((tamanio, tiempoTotal)))
 			else:
 				tiempoTotalGauss.append(((tamanio, tiempoTotal)))
-	printTiempos(tiempoTotalLU, tiempoTotalGauss)
+	printTiempos(tiempoTotalLU, tiempoTotalGauss, "ovalo")
 
 def obtenerTiemposMultiB():
 	tiempoTotalLU = []
@@ -101,7 +102,7 @@ def obtenerTiemposMultiB():
 				tiempoTotalLU = listaSubDiscretizaciones
 			else:
 				tiempoTotalGauss = listaSubDiscretizaciones
-	printTiempos(tiempoTotalLU, tiempoTotalGauss)
+	printTiempos(tiempoTotalLU, tiempoTotalGauss, "multiB")
 
 def progress(count, total, suffix=''):
     bar_len = 60
@@ -130,7 +131,7 @@ def obtenerTiempos():
 	obtenerTiemposOvalo()
 
 def main():
-	ejecutarTests()
+	#ejecutarTests()
 	obtenerTiempos()
 
 if __name__ == '__main__':
