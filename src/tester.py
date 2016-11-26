@@ -131,7 +131,7 @@ def obtenerTiempos():
 	obtenerTiemposOvalo()
 
 def main():
-	#ejecutarTests()
+	ejecutarTests()
 	obtenerTiempos()
 
 if __name__ == '__main__':
