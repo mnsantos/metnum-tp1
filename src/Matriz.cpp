@@ -305,3 +305,26 @@ bool Matriz::esTriangularInferior(){
   }
   return true;
 }
+
+Matriz Matriz::diferencia(Matriz b){
+  Matriz diff = Matriz(cantFilas, cantColumnas);
+  for (int i=0; i<cantFilas; i++){
+    for (int j = 0; j < cantColumnas; j++)
+    {
+      diff.matriz[i][j] = (matriz[i][j] - b.matriz[i][j]);
+    }
+  }
+}
+
+double Matriz::maxElem() const{
+  double maxElem = 0;
+  for (int i=0; i<cantFilas; i++){
+    for (int j = 0; j < cantColumnas; j++)
+    {
+      if(abs(matriz[i][j]) > maxElem)
+        maxElem = (matriz[i][j]);
+    }
+  }
+  return maxElem;
+}
+

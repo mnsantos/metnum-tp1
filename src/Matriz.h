@@ -30,6 +30,8 @@ class Matriz {
     vector<Matriz> lu();
     bool esTriangularSuperior();
     bool esTriangularInferior();
+    Matriz diferencia(Matriz b);
+    double maxElem() const;
 
   private:
     int cantFilas;
