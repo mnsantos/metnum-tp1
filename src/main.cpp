@@ -32,16 +32,16 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
   double cantRadios = params.mMasUno;
   double cantAngulos = params.n;
   Matriz radiosIsoterma(cantAngulos, 1);
-  ////cout << "pre for" << endl;
+  //cout << "pre for" << endl;
   for(int ang=0; ang< cantAngulos; ang++){
     for(int rad=0; rad< cantRadios-1; rad++){
-      ////cout<< "ang: " << ang<<endl;
-      ////cout<< "rad: " << rad<<endl;
+      //cout<< "ang: " << ang<<endl;
+      //cout<< "rad: " << rad<<endl;
       Tactual=temp(rad, ang, sol, params);
       Tsiguiente=temp(rad+1, ang, sol, params);
-      ////cout << "obtuvo T" << endl;
+      //cout << "obtuvo T" << endl;
       double valor;
-      ////cout << "isoterma: " << params.valorIsoterma << endl;
+      //cout << "isoterma: " << params.valorIsoterma << endl;
       // habria que chequear si no es ~= en vez de =
       if(Tactual == params.valorIsoterma) {
         valor = rad;
@@ -54,7 +54,7 @@ Matriz calcularIsoterma(Parametros params, Matriz sol) {
         break;
       }
       else if(Tsiguiente == params.valorIsoterma){
-      //  cout << "puto!" << endl;
+        //cout << "puto!" << endl;
         valor = rad+1;
         radiosIsoterma.put(ang, 0, params.radioInterno + valor * params.deltaRadio);
         break;
@@ -177,16 +177,19 @@ Parametros nuevosParametros(Matriz sol, Parametros params) {
 
 Matriz resolver(Parametros params, int i, string metodo, Resolvedor resolvedor) {
   Matriz sol;
+  cout << "entra a resolver" << endl;
   //matriz de soluciones (cada solución es una columna)
   if(metodo == "0"){
+    cout << "va a resolver por Gauss"<<endl;
     sol = resolvedor.resolverUsandoGauss(&params.bs[i]);
   } else {
+    cout << "va a resolver por LU"<<endl;
     sol = resolvedor.resolverUsandoLU(&params.bs[i]);
   }
   return sol;
 }
 
-Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Resolvedor r){
+Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo){
   Parametros copyParms = params;
   Parametros prevParams;
   if (DISCRETIZAR_NUEVAMENTE) {
@@ -194,24 +197,28 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo, Reso
     SUBDISCRETIZACIONES.push_back(0);
     while (hayQueDiscretizarNuevamente(sol, copyParms)) {
       Parametros copyParms2;
-      ////cout << "inicio while" << endl;
-      SUBDISCRETIZACIONES[i] ++;
-    //  cout << j <<endl;
+      //cout << "inicio while" << endl;
+      SUBDISCRETIZACIONES[i]++;
+      //cout << j <<endl;
       prevParams = copyParms;
       copyParms = nuevosParametros(sol, copyParms);
       if (prevParams.radioExterno == copyParms.radioExterno && prevParams.radioInterno == copyParms.radioInterno){
         break;
       }
-      ////cout << "pre sol" << endl;
+      cout << "pre sol" << endl;
       //arma la matriz de coeficientes a resolver.
+      cout << 1 << endl;
       Matriz m = Matriz(copyParms);
+      cout << 2 << endl;
       Resolvedor resolvedor = Resolvedor(m);
-      sol = resolver(copyParms, i, metodo, resolvedor);
+      cout << 3 << endl;
+      sol = resolver(copyParms, 0, metodo, resolvedor);
+      cout << 4 << endl;
       j++;
-      ////cout << "fin while" << endl;
+      cout << "fin while" << endl;
     }
   }
-  ////cout << "voy a calcular isoterma" << endl;
+  cout << "voy a calcular isoterma" << endl;
   return calcularIsoterma(copyParms, sol);
 }
 
@@ -235,17 +242,18 @@ int main(int argc, char **argv) {
   Resolvedor resolvedor = Resolvedor(m);
   for (int i=0; i<params.nInst; i++){
     inicioAux = clock();
+    cout << "0" << endl;
     Matriz sol = resolver(params, i, metodo, resolvedor);
-    ////cout << "1" << endl;
+    cout << "1" << endl;
     soluciones.push_back(sol);
-    Matriz isot = obtenerIsoterma(sol, params, i, metodo, resolvedor);
-    ////cout << "2" << endl;
+    Matriz isot = obtenerIsoterma(sol, params, i, metodo);
+    cout << "2" << endl;
     finAux = clock();
     isotermas.push_back(isot);
     peligrosidades.push_back(medirPeligrosidad(isot, params));
-    ////cout << "3" << endl;
+    cout << "3" << endl;
     tiemposPorInstancia.push_back(double(finAux - inicioAux) / CLOCKS_PER_SEC);
-    ////cout << "4" << endl;
+    cout << "4" << endl;
   }
   final = clock();
 

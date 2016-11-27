@@ -129,6 +129,7 @@ def obtenerTiempos():
 	obtenerTiemposEstrella()
 	obtenerTiemposParedes()
 	obtenerTiemposOvalo()
+	obtenerTiemposMultiB()
 
 def main():
 	ejecutarTests()
