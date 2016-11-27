@@ -11,7 +11,7 @@ class Resolvedor {
 
   public:
   	Resolvedor();
-    Resolvedor(Matriz& m);
+    Resolvedor(Matriz& m, string metodo);
     Matriz resolverUsandoGauss(Matriz * b);
     Matriz resolverUsandoLU(Matriz * b);
     Matriz resolverTriangular(Matriz * m, Matriz * b);

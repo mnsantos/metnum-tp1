@@ -8,11 +8,13 @@ using namespace std;
 Resolvedor::Resolvedor(){
 }
 
-Resolvedor::Resolvedor(Matriz& m){
-  vector<Matriz> lu = m.lu();
+Resolvedor::Resolvedor(Matriz& m, string metodo){
+  if (metodo == "1"){
+    vector<Matriz> lu = m.lu();
+    L = lu[0];
+    U = lu[1];
+  }
   matriz = m;
-  L = lu[0];
-  U = lu[1];
 }
 
 Matriz Resolvedor::resolverTriangular(Matriz * m, Matriz * b){
