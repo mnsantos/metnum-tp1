@@ -12,7 +12,7 @@
 using namespace std;
 
 double CONSTANTE = 0.5;
-bool DISCRETIZAR_NUEVAMENTE = true; 
+bool DISCRETIZAR_NUEVAMENTE = false; 
 vector<int> SUBDISCRETIZACIONES;
 
 void salida(vector<Matriz> xs, vector<Matriz> isotermas, string metodo, vector<double> peligrosidades, Parametros params, vector<int> subdiscretizaciones, vector<double> tiemposPorInstancia, double tiempoTotal, FileManager manager) {
@@ -210,7 +210,7 @@ Matriz obtenerIsoterma(Matriz sol, Parametros params, int i, string metodo){
       cout << 1 << endl;
       Matriz m = Matriz(copyParms);
       cout << 2 << endl;
-      Resolvedor resolvedor = Resolvedor(m);
+      Resolvedor resolvedor = Resolvedor(m, metodo);
       cout << 3 << endl;
       sol = resolver(copyParms, 0, metodo, resolvedor);
       cout << 4 << endl;
@@ -239,9 +239,12 @@ int main(int argc, char **argv) {
   vector<double> peligrosidades;
   //arma la matriz de coeficientes a resolver.
   Matriz m = Matriz(params);
-  Resolvedor resolvedor = Resolvedor(m);
+  inicioAux = clock();
+  Resolvedor resolvedor = Resolvedor(m, metodo);
   for (int i=0; i<params.nInst; i++){
-    inicioAux = clock();
+    if (i!=0) {
+      inicioAux = clock();
+    }
     cout << "0" << endl;
     Matriz sol = resolver(params, i, metodo, resolvedor);
     cout << "1" << endl;
@@ -266,3 +269,4 @@ int main(int argc, char **argv) {
   //peligrosidad
   //printf("El Tiempo es: %f\n",(final_ - inicio_)/CLK_TCK);
 }
+
