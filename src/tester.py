@@ -23,6 +23,27 @@ def readResults(filename):
 		print tiempoTotal
 	return metodo, listaSubDiscretizaciones, (tamanio, tiempoTotal)
 
+def readResultsMultiB(filename):
+	with open(filename) as f:
+		params = f.readline().split('_')
+		tamanio = int(params[2]) * int(params[3])
+		instancias = int(params[-1])
+		metodo = f.readline()[:-1]
+		peligrosidad = f.readline().split()
+		subdiscretizaciones = f.readline().split()
+		tiemposPorInstancia = f.readline().split()
+		tiempoTotal = float(f.readline()[:-1])
+		listaTiemposPorInstancias = []
+		sumTiemposPorInstancia = 0
+		for i in xrange(0,len(tiemposPorInstancia)):
+			#sumTiemposPorInstancia += float(tiemposPorInstancia[i])
+			listaTiemposPorInstancias.append((i, float(tiemposPorInstancia[i])))
+		print instancias
+		print tiemposPorInstancia
+		print tamanio
+		print tiempoTotal
+	return metodo, listaTiemposPorInstancias, tiempoTotal
+
 def printTiempos(tiemposLU, tiemposGauss, filename):
 	X = [ x for (x,y) in tiemposLU ]
 	Y = [ y for (x,y) in tiemposLU ]
@@ -38,6 +59,22 @@ def printTiempos(tiemposLU, tiemposGauss, filename):
 	plt.savefig("experimentos/"+filename+".png")
 	plt.close()
 	#plt.show()
+
+def printTiemposMultiB(listaTiemposPorInstanciasLU, listaTiemposPorInstanciasGauss,tiempoTotalLU,tiempoTotalGauss, filename):
+	X = [ x for (x,y) in listaTiemposPorInstanciasLU ]
+	Y = [ y for (x,y) in listaTiemposPorInstanciasLU ]
+	plt.plot(X, Y, label='Factorizacion LU')
+	X = [ x for (x,y) in listaTiemposPorInstanciasGauss ]
+	Y = [ y for (x,y) in listaTiemposPorInstanciasGauss ]
+	plt.plot(X, Y, label='Factorizacion por Gauss')
+	plt.title('Tiempo total LU: ' + str(tiempoTotalLU) + '\n' + 'Tiempo total Gauss: ' + str(tiempoTotalGauss))
+	plt.xlabel('Cantidad de instancias')
+	plt.ylabel('Tiempo en segundos')
+	plt.grid(True)
+	plt.legend(loc='upper center', shadow=True)
+	plt.savefig("experimentos/"+filename+".png")
+	plt.show()
+	plt.close()
 
 def obtenerTiemposCirculo():
 	tiempoTotalLU = []
@@ -92,17 +129,20 @@ def obtenerTiemposOvalo():
 	printTiempos(tiempoTotalLU, tiempoTotalGauss, "ovalo")
 
 def obtenerTiemposMultiB():
-	tiempoTotalLU = []
-	tiempoTotalGauss = []
-	for i in xrange(21,22):
-		for method in xrange(0,2):
-			filename = 'experimentos/test'+str(i)+'_'+str(method)+'.out'
-			metodo, listaSubDiscretizaciones, [tamanio, tiempoTotal] = readResults(filename)
-			if metodo == 'LU':
-				tiempoTotalLU = listaSubDiscretizaciones
-			else:
-				tiempoTotalGauss = listaSubDiscretizaciones
-	printTiempos(tiempoTotalLU, tiempoTotalGauss, "multiB")
+	listaTiemposPorInstanciasLU = []
+	listaTiemposPorInstanciasGauss = []
+	tiempoTotalLU = 0
+	tiempoTotalGauss = 0
+	for method in xrange(0,2):
+		filename = 'experimentos/test21_'+str(method)+'.out'
+		metodo, listaTiemposPorInstancias, tiempoTotal = readResultsMultiB(filename)
+		if metodo == 'LU':
+			tiempoTotalLU = tiempoTotal
+			listaTiemposPorInstanciasLU = listaTiemposPorInstancias
+		else:
+			tiempoTotalGauss = tiempoTotal
+			listaTiemposPorInstanciasGauss = listaTiemposPorInstancias
+	printTiemposMultiB(listaTiemposPorInstanciasLU, listaTiemposPorInstanciasGauss,tiempoTotalLU, tiempoTotalGauss, 'multiB')
 
 def progress(count, total, suffix=''):
     bar_len = 60
@@ -115,7 +155,7 @@ def progress(count, total, suffix=''):
 def ejecutarTests():
 	os.system('python metnum.py build')
 	j = 0
-	for i in xrange(1,24):
+	for i in xrange(21,22):
 		for method in xrange(0,2):
 			fin = 'tests/test'+str(i)+'.in'
 			fout = 'results/test'+str(i)+'_'+str(method)+'.out'
