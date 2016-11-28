@@ -273,7 +273,7 @@ vector<Matriz> Matriz::lu(){
 Matriz Matriz::producto(Matriz * m){
   Matriz res = Matriz(cantFilas, m -> columnas());
   for (int i=0; i<cantFilas; i++){
-    for (int j=0; j<cantColumnas; j++){
+    for (int j=0; j< m -> columnas(); j++){
       double v = 0;
       for (int k=0; k<cantColumnas; k++){
         v += matriz[i][k] * m -> elem(k,j);
@@ -314,6 +314,7 @@ Matriz Matriz::diferencia(Matriz b){
       diff.matriz[i][j] = (matriz[i][j] - b.matriz[i][j]);
     }
   }
+  return diff;
 }
 
 double Matriz::maxElem() const{
